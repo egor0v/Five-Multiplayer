@@ -26,3 +26,5 @@
 *.exe
 *.out
 *.app
+/FiveMP/FiveMP.VC.VC.opendb
+/FiveMP/FiveMP.VC.db
