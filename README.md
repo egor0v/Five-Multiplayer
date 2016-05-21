@@ -5,5 +5,5 @@ Five Multiplayer and Greybeard Inc. are in no way affiliated with Rockstar Games
 
 This project uses RakNet and ScriptHookV - They are included in the repository.
 
-For any issues regarding this project, please e-mail the following e-mail:
+For any issues regarding this project and/or repository, please e-mail the following e-mail below, we try to answer within 24 hours. We cannot guarantee this and it can take up to a week or two weeks to receive an answer.
 developer@five-multiplayer.net
