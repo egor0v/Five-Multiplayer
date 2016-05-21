@@ -6,7 +6,10 @@
 
 int main()
 {
-	// Yes
+	while (1)
+	{
+		// loop to keep the .exe running :)
+	}
     return 0;
 }
 
