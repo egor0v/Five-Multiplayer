@@ -498,6 +498,7 @@
     <ClInclude Include="InjectBase.h">
       <Filter>Vendor\Injector</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FiveMP.cpp" />
@@ -868,5 +869,11 @@
     <None Include="..\..\Vendor\RakNet\RakNet_vc9.vcproj">
       <Filter>Vendor\RakNet</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FiveMP.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
 </Project>

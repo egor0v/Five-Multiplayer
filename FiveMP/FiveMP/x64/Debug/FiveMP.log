@@ -1,17 +1,1 @@
-﻿  stdafx.cpp
-cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
-  SharedUtils.cpp
-  InjectBase.cpp
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(57): warning C4101: 'pmc': unreferenced local variable
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(134): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(152): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(152): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(179): warning C4312: 'type cast': conversion from 'DWORD' to 'PVOID' of greater size
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(201): warning C4311: 'type cast': pointer truncation from 'BYTE *' to 'DWORD'
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(201): warning C4302: 'type cast': truncation from 'BYTE *' to 'DWORD'
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(336): warning C4477: 'printf' : format string '%08X' requires an argument of type 'unsigned int', but variadic argument 2 has type 'HMODULE'
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(336): warning C4313: 'printf': '%X' in format string conflicts with argument 2 of type 'HMODULE'
-  FiveMP.cpp
-  Generating Code...
-h:\github\five-multiplayer\fivemp\fivemp\injectbase.cpp(255): warning C4172: returning address of local variable or temporary: buffer
-  FiveMP.vcxproj -> H:\GitHub\Five-Multiplayer\FiveMP\x64\Debug\FiveMP.exe
+﻿  FiveMP.vcxproj -> H:\GitHub\Five-Multiplayer\FiveMP\x64\Debug\FiveMP.exe

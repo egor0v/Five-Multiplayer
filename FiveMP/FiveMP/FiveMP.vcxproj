@@ -310,6 +310,7 @@
     <ClInclude Include="..\..\Vendor\ScriptHookV\natives.h" />
     <ClInclude Include="..\..\Vendor\ScriptHookV\types.h" />
     <ClInclude Include="InjectBase.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SharedUtils.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -446,6 +447,12 @@
     <None Include="..\..\Vendor\RakNet\RakNet.vcproj" />
     <None Include="..\..\Vendor\RakNet\RakNet_vc8.vcproj" />
     <None Include="..\..\Vendor\RakNet\RakNet_vc9.vcproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FiveMP.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
