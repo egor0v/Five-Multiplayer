@@ -26,18 +26,21 @@ int main(void) {
 
 	if (!SharedUtils::Registry::Read(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\rockstar games\\Grand Theft Auto V", "InstallFolder", GamePath, MAX_PATH))
 	{
-		// If we cannot find it - display an error
-		// and close launcher
-		// TODO: Custom game path selector
-		MessageBox(NULL, "Cannot find game path in registry!", "Fatal Error", MB_ICONERROR);
-		return 0;
+		if (!SharedUtils::Registry::Read(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\Rockstar Games\\GTAV", "InstallFolderSteam", GamePath, MAX_PATH))
+		{
+			// If we cannot find it - display an error
+			// and close launcher
+			// TODO: Custom game path selector
+			MessageBox(NULL, "Cannot find game path in registry!", "Fatal Error", MB_ICONERROR);
+			return 0;
+		}
 	}
 
 	printf("SEARCH: Successfully found the install directory from the registry!\n\n");
 
 	// Format game paths
 	sprintf(GamePath, "%s", GamePath);
-	sprintf(GameFullPath, "%s\\PlayGTAV.exe", GamePath);
+	sprintf(GameFullPath, "%s\\GTAVLauncher.exe", GamePath);
 
 	// Predefine startup and process infos
 	STARTUPINFO siStartupInfo;
@@ -51,8 +54,10 @@ int main(void) {
 	// Create game process
 	if (!CreateProcess(GameFullPath, Params, NULL, NULL, true, CREATE_SUSPENDED, NULL, GamePath, &siStartupInfo, &piProcessInfo))
 	{
-		MessageBox(NULL, "Grand Theft Auto V was not able to start.", "Fatal Error", MB_ICONERROR);
-		return 0;
+		if (!ShellExecute(0, 0, "steam://run/271590", 0, 0, SW_SHOW)) {
+			MessageBox(NULL, "Grand Theft Auto V was not able to start.", "Fatal Error", MB_ICONERROR);
+			return 0;
+		}
 	}
 
 	printf("START: Successfully started Grand Theft Auto V!\n\n");
