@@ -16,7 +16,7 @@ int main(void) {
 	printf("SEARCH: Attempting to search for %s.\n", dllname);
 
 	if (!DoesFileExist(dllname)) {
-		MessageBox(NULL, "Could not find FiveMP.dll", "Fatal Error", MB_ICONERROR);
+		MessageBox(NULL, "Could not find the launcher DLL", "Fatal Error", MB_ICONERROR);
 		return 0;
 	}
 

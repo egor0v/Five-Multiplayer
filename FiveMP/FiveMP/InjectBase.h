@@ -3,8 +3,10 @@
 int GetPID(char *pProcessName);
 bool foundProcess(DWORD processID);
 bool PrintMemoryInfo(DWORD processID);
+
 bool InjectDLL(char *processName, const char *dllname);
 bool DoesFileExist(const char *fileName);
+
 void initTimer(void);
 void tryRunTasks(void);
 int createMenuItem(char *charName, int times, int guitype, char *titleName);
