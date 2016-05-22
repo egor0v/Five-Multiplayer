@@ -1,14 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
     <Text Include="..\..\Vendor\RakNet\CMakeLists.txt">
       <Filter>Vendor\RakNet</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\..\Vendor\ScriptHookV\keyboard.h">
       <Filter>Vendor\ScriptHookV</Filter>
     </ClInclude>
@@ -489,10 +486,21 @@
     <ClInclude Include="..\..\Vendor\RakNet\AutopatcherRepositoryInterface.h">
       <Filter>Vendor\RakNet</Filter>
     </ClInclude>
+    <ClInclude Include="SharedUtils.h">
+      <Filter>Vendor\Injector</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="InjectBase.h">
+      <Filter>Vendor\Injector</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FiveMP.cpp" />
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="..\..\Vendor\ScriptHookV\keyboard.cpp">
       <Filter>Vendor\ScriptHookV</Filter>
     </ClCompile>
@@ -826,6 +834,15 @@
     <ClCompile Include="..\..\Vendor\RakNet\Base64Encoder.cpp">
       <Filter>Vendor\RakNet</Filter>
     </ClCompile>
+    <ClCompile Include="SharedUtils.cpp">
+      <Filter>Vendor\Injector</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="InjectBase.cpp">
+      <Filter>Vendor\Injector</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Vendor">
@@ -836,6 +853,9 @@
     </Filter>
     <Filter Include="Vendor\ScriptHookV">
       <UniqueIdentifier>{ffda33b1-ae4d-4367-8f1c-cc53b2e69f4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\Injector">
+      <UniqueIdentifier>{4b93802e-55d5-4627-9335-730e510c6ecf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
