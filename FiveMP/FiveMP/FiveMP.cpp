@@ -47,7 +47,6 @@ int main(void) {
 				printf("Couldn't find Process Name GTA5.exe, please try re-opening it\n");
 				Sleep(200);
 				ClearScreen();
-				continue;
 			}
 			GameThread = true;
 		}
