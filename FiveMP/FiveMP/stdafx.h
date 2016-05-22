@@ -10,8 +10,9 @@
 #include <time.h>
 #include <math.h>
 #include <iostream>
-#include <algorithm> 
+#include <algorithm>
+#include <fstream>
 #include <tchar.h>
 
-#include "InjectBase.h"
 #include "SharedUtils.h"
+#include "InjectBase.h"

@@ -4,10 +4,25 @@ using namespace std;
 
 //Entry
 int main(void) {
+	SetConsoleTitle("FiveMP Launcher");
+
+	const char *dllname = "m0d-s0beit-v.dll";
+
 	bool GameThread = false;
 	char GamePath[MAX_PATH] = { 0 };
 	char GameFullPath[MAX_PATH] = { 0 };
 	char Params[] = "";
+
+	printf("SEARCH: Attempting to search for %s.\n", dllname);
+
+	if (!DoesFileExist(dllname)) {
+		MessageBox(NULL, "Could not find FiveMP.dll", "Fatal Error", MB_ICONERROR);
+		return 0;
+	}
+
+	printf("SEARCH: Successfully found %s!\n\n", dllname);
+
+	printf("SEARCH: Attempting to search for GTA V's install directory.\n");
 
 	if (!SharedUtils::Registry::Read(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\rockstar games\\Grand Theft Auto V", "InstallFolder", GamePath, MAX_PATH))
 	{
@@ -17,6 +32,8 @@ int main(void) {
 		MessageBox(NULL, "Cannot find game path in registry!", "Fatal Error", MB_ICONERROR);
 		return 0;
 	}
+
+	printf("SEARCH: Successfully found the install directory from the registry!\n\n");
 
 	// Format game paths
 	sprintf(GamePath, "%s", GamePath);
@@ -29,6 +46,8 @@ int main(void) {
 	memset(&piProcessInfo, 0, sizeof(piProcessInfo));
 	siStartupInfo.cb = sizeof(siStartupInfo);
 
+	printf("START: Attempting to start Grand Theft Auto V.\n");
+
 	// Create game process
 	if (!CreateProcess(GameFullPath, Params, NULL, NULL, true, CREATE_SUSPENDED, NULL, GamePath, &siStartupInfo, &piProcessInfo))
 	{
@@ -36,22 +55,39 @@ int main(void) {
 		return 0;
 	}
 
+	printf("START: Successfully started Grand Theft Auto V!\n\n");
+
+	printf("SCAN: Waiting for GTA5.exe to start.\n");
+
 	// Resume game main thread
 	ResumeThread(piProcessInfo.hThread);
+
+	bool GameStarted = false;
 
 	while (GameThread != true) {
 		HWND hWnds = FindWindowA(NULL, "Grand Theft Auto V");
 
 		if (hWnds != NULL) {
-			while (!tryInjectDLLIntoGame("GTA5.exe")) {
-				printf("Couldn't find Process Name GTA5.exe, please try re-opening it\n");
-				Sleep(200);
-				ClearScreen();
+			if (GameStarted == false) {
+				printf("SCAN: GTA5.exe has successfully started!\n\n");
+				GameStarted = true;
+
+				if (InjectDLL("GTA5.exe", dllname) == true) {
+					printf("INJECT: Successfully injected into Grand Theft Auto V!\n\n");
+					GameThread = true;
+				}
+				else {
+					printf("SCAN: Couldn't find GTA5.exe, please try restarting the launcher!\n\n");
+
+					Sleep(200);
+					ClearScreen();
+
+					GameThread = false;
+				}
 			}
-			GameThread = true;
 		}
 	}
-	printf("DLL injected, closing...\n");
+	Sleep(5000);
 	//FindNativeTableAddress();
 	//getch();
 }

@@ -207,18 +207,25 @@ DWORD GetModuleBase(DWORD dwProcessIdentifier, TCHAR *lpszModuleName)
 	}
 	return dwModuleBaseAddress;
 }
-bool tryInjectDLLIntoGame(char *processName) {
+bool DoesFileExist(const char *fileName)
+{
+	std::ifstream infile(fileName);
+	return infile.good();
+}
+bool InjectDLL(char *processName, const char *dllname) {
 	char buffer[128];
-	int size;
-	sprintf_s(buffer, "Trying to inject into %s..", processName);
-	size = createMenuItem("-", 45, GUI_TITLE, buffer);
+
+	printf("INJECT: Attempting to inject %s into %s.\n", dllname, processName);
+
 	if (!foundProcess(GetPID(processName))) {
 		return false;
 	}
+
 	if (returnProcessMemory(GetPID(processName)) > 32) { //128
 		TCHAR NPath[MAX_PATH];
 		GetCurrentDirectory(MAX_PATH, NPath);
-		sprintf(buffer, "%s\\m0d-s0beit-v.dll", NPath);
+		sprintf(buffer, "%s\\%s", NPath, dllname);
+
 		if (Inject(GetPID(processName), buffer))
 		{
 			return true;
