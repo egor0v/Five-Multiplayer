@@ -14,7 +14,7 @@ void initModBaseRequired() {
 	modbaseRequiredStarted = true;
 }
 void initConnection() {
-	pNetowkManager = new CNetworkManager("127.0.0.1", atoi("7777"), "colistro123", ""); //Start the game
+	pNetowkManager = new CNetworkManager("127.0.0.1", atoi("7777"), "FiveMP User", ""); //Start the game
 }
 void connectToServer() {
 	std::thread t1(&initConnection);

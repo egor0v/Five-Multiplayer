@@ -228,8 +228,11 @@ void Run() //Only call WAIT(0) here. The Tick() function will ignore wakeAt and 
 		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, FALSE))
 			playerVeh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 
-		//Test that drawing works.
-		//draw_menu_line("M5:O Alpha", 15.0f, 50.0f, 570.0f, 6.0f, 5.0f, false, false, false); //drawrect set to true
+		char msg[128];
+
+		//DEBUG: velocity
+		//sprintf(msg, "VELOCITY: %f", ENTITY::GET_ENTITY_SPEED(playerPed));
+		//draw_menu_line(msg, 15.0f, 50.0f, 570.0f, 6.0f, 5.0f, false, false, false); //drawrect set to true
 	}
 	return;
 }
