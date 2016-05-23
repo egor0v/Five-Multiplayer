@@ -1,16 +1,6 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-#if   defined(_WIN32)
+#if defined(_WIN32) && !defined(_XBOX) && !defined(X360)
 #include <conio.h> /* getche() */
-
+#elif defined(_PS3) || defined(__PS3__) || defined(SN_TARGET_PS3)
 #else
 #include <termios.h>
 #include <stdio.h>

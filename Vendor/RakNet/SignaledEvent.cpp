@@ -1,13 +1,3 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 #include "SignaledEvent.h"
 #include "RakAssert.h"
 #include "RakSleep.h"
@@ -19,16 +9,10 @@
 
 using namespace RakNet;
 
-
-
-
-
 SignaledEvent::SignaledEvent()
 {
 #ifdef _WIN32
 	eventList=INVALID_HANDLE_VALUE;
-
-
 #else
 	isSignaled=false;
 #endif
@@ -40,27 +24,11 @@ SignaledEvent::~SignaledEvent()
 
 void SignaledEvent::InitEvent(void)
 {
-#if defined(WINDOWS_PHONE_8) || defined(WINDOWS_STORE_RT)
-		eventList=CreateEventEx(0, 0, 0, 0);
-#elif defined(_WIN32)
+#ifdef _WIN32
 		eventList=CreateEvent(0, false, false, 0);
-
-
-
-
-
-
-
-
-
 #else
-
-#if !defined(ANDROID)
 		pthread_condattr_init( &condAttr );
 		pthread_cond_init(&eventList, &condAttr);
-#else
-		pthread_cond_init(&eventList, 0);
-#endif
 		pthread_mutexattr_init( &mutexAttr	);
 		pthread_mutex_init(&hMutex, &mutexAttr);
 #endif
@@ -74,21 +42,10 @@ void SignaledEvent::CloseEvent(void)
 		CloseHandle(eventList);
 		eventList=INVALID_HANDLE_VALUE;
 	}
-
-
-
-
-
-
-
-
-
 #else
 	pthread_cond_destroy(&eventList);
 	pthread_mutex_destroy(&hMutex);
-#if !defined(ANDROID)
 	pthread_condattr_destroy( &condAttr );
-#endif
 	pthread_mutexattr_destroy( &mutexAttr );
 #endif
 }
@@ -97,16 +54,6 @@ void SignaledEvent::SetEvent(void)
 {
 #ifdef _WIN32
 	::SetEvent(eventList);
-
-
-
-
-
-
-
-
-
-
 #else
 	// Different from SetEvent which stays signaled.
 	// We have to record manually that the event was signaled
@@ -127,48 +74,7 @@ void SignaledEvent::WaitOnEvent(int timeoutMs)
 //		eventList,
 //		false,
 //		timeoutMs);
-	WaitForSingleObjectEx(eventList,timeoutMs,FALSE);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	WaitForSingleObject(eventList,timeoutMs);
 #else
 
 	// If was previously set signaled, just unset and return
@@ -182,35 +88,18 @@ void SignaledEvent::WaitOnEvent(int timeoutMs)
 	isSignaledMutex.Unlock();
 
 	
-
-	//struct timespec   ts;
+	struct timespec   ts;
 
 	// Else wait for SetEvent to be called
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		struct timespec   ts;
-
+#if defined(_PS3) || defined(__PS3__) || defined(SN_TARGET_PS3)
+                                                                                                                                                                                                                                                                                                                                      
+	#else
 		int rc;
 		struct timeval    tp;
 		rc =  gettimeofday(&tp, NULL);
 		ts.tv_sec  = tp.tv_sec;
 		ts.tv_nsec = tp.tv_usec * 1000;
-// #endif
+	#endif
 
 		while (timeoutMs > 30)
 		{
@@ -222,16 +111,7 @@ void SignaledEvent::WaitOnEvent(int timeoutMs)
 			        ts.tv_nsec -= 1000000000;
 			        ts.tv_sec++;
 			}
-			
-			// [SBC] added mutex lock/unlock around cond_timedwait.
-            // this prevents airplay from generating a whole much of errors.
-            // not sure how this works on other platforms since according to
-            // the docs you are suppost to hold the lock before you wait
-            // on the cond.
-            pthread_mutex_lock(&hMutex);
 			pthread_cond_timedwait(&eventList, &hMutex, &ts);
-            pthread_mutex_unlock(&hMutex);
-
 			timeoutMs-=30;
 
 			isSignaledMutex.Lock();
@@ -251,14 +131,10 @@ void SignaledEvent::WaitOnEvent(int timeoutMs)
 		        ts.tv_nsec -= 1000000000;
 		        ts.tv_sec++;
 		}
-
-		pthread_mutex_lock(&hMutex);
 		pthread_cond_timedwait(&eventList, &hMutex, &ts);
-        pthread_mutex_unlock(&hMutex);
 
 		isSignaledMutex.Lock();
 		isSignaled=false;
 		isSignaledMutex.Unlock();
-
 #endif
 }

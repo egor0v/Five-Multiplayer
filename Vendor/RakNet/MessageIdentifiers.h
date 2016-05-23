@@ -1,16 +1,9 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file
 /// \brief All the message identifiers used by RakNet.  Message identifiers comprise the first byte of any message.
 ///
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 
 #ifndef __MESSAGE_IDENTIFIERS_H
@@ -29,11 +22,7 @@ enum OutOfBandIdentifiers
 	ID_ROUTER_2_REPLY_TO_SPECIFIED_PORT,
 	ID_ROUTER_2_MINI_PUNCH_REPLY,
 	ID_ROUTER_2_MINI_PUNCH_REPLY_BOUNCE,
-	ID_XBOX_360_VOICE,
-	ID_XBOX_360_GET_NETWORK_ROOM,
-	ID_XBOX_360_RETURN_NETWORK_ROOM,
-	ID_NAT_PING,
-	ID_NAT_PONG,
+	ID_ROUTER_2_REROUTE,
 };
 
 /// You should not edit the file MessageIdentifiers.h as it is a part of RakNet static library
@@ -56,6 +45,7 @@ enum DefaultMessageIDTypes
 	//
 	/// These types are never returned to the user.
 	/// Ping from a connected system.  Update timestamps (internal use only)
+	/// 0 is reserved for UDT's connect message
 	ID_CONNECTED_PING,  
 	/// Ping from an unconnected system.  Reply but do not update timestamps. (internal use only)
 	ID_UNCONNECTED_PING,
@@ -94,7 +84,7 @@ enum DefaultMessageIDTypes
 	/// This number will be returned by RakPeerInterface::Send() or RakPeerInterface::SendList(). ID_SND_RECEIPT_ACKED means that
 	/// the message arrived
 	ID_SND_RECEIPT_ACKED,
-	/// If RakPeerInterface::Send() is called where PacketReliability contains UNRELIABLE_WITH_ACK_RECEIPT, then on a later call to
+	/// If RakPeerInterface::Send() is called where PacketReliability contains _WITH_ACK_RECEIPT, then on a later call to
 	/// RakPeerInterface::Receive() you will get ID_SND_RECEIPT_ACKED or ID_SND_RECEIPT_LOSS. The message will be 5 bytes long,
 	/// and bytes 1-4 inclusive will contain a number in native order containing a number that identifies this message. This number
 	/// will be returned by RakPeerInterface::Send() or RakPeerInterface::SendList(). ID_SND_RECEIPT_LOSS means that an ack for the
@@ -120,8 +110,6 @@ enum DefaultMessageIDTypes
 	/// RakPeer - The system specified in Packet::systemAddress has disconnected from us.  For the client, this would mean the
 	/// server has shutdown. 
 	ID_DISCONNECTION_NOTIFICATION,
-	/// RakPeer - we initiated disconnect
-	ID_DISCONNECTION_BY_USER,
 	/// RakPeer - Reliable packets cannot be delivered to the system specified in Packet::systemAddress.  The connection to that
 	/// system has been closed. 
 	ID_CONNECTION_LOST,
@@ -136,12 +124,11 @@ enum DefaultMessageIDTypes
 	// Means that this IP address connected recently, and can't connect again as a security measure. See
 	/// RakPeer::SetLimitIPConnectionFrequency()
 	ID_IP_RECENTLY_CONNECTED,
-	/// RakPeer - The sizeof(RakNetTime) bytes following this byte represent a value which is automatically modified by the difference
+	/// RakPeer - The four bytes following this byte represent an unsigned int which is automatically modified by the difference
 	/// in system times between the sender and the recipient. Requires that you call SetOccasionalPing.
 	ID_TIMESTAMP,
     /// RakPeer - Pong from an unconnected system.  First byte is ID_UNCONNECTED_PONG, second sizeof(RakNet::TimeMS) bytes is the ping,
 	/// following bytes is system specific enumeration data.
-	/// Read using bitstreams
 	ID_UNCONNECTED_PONG,
 	/// RakPeer - Inform a remote system of our IP/Port. On the recipient, all data past ID_ADVERTISE_SYSTEM is whatever was passed to
 	/// the data parameter
@@ -158,7 +145,7 @@ enum DefaultMessageIDTypes
 	/// ConnectionGraph2 plugin - In a client/server environment, a client other than ourselves has been forcefully dropped.
 	///  Packet::systemAddress is modified to reflect the systemAddress of this client.
 	ID_REMOTE_CONNECTION_LOST,
-	/// ConnectionGraph2 plugin: Bytes 1-4 = count. for (count items) contains {SystemAddress, RakNetGUID, 2 byte ping}
+	/// ConnectionGraph2 plugin: Bytes 1-4 = count. for (count items) contains {SystemAddress, RakNetGUID}
 	ID_REMOTE_NEW_INCOMING_CONNECTION,
 
 	/// FileListTransfer plugin - Setup data
@@ -184,6 +171,10 @@ enum DefaultMessageIDTypes
 	ID_REPLICA_MANAGER_DOWNLOAD_STARTED,
  	/// ReplicaManager plugin - Finished downloading all serialized objects
 	ID_REPLICA_MANAGER_DOWNLOAD_COMPLETE,
+	/// Serialize construction for an object that already exists on the remote system
+	ID_REPLICA_MANAGER_3_SERIALIZE_CONSTRUCTION_EXISTING,
+	ID_REPLICA_MANAGER_3_LOCAL_CONSTRUCTION_REJECTED,
+	ID_REPLICA_MANAGER_3_LOCAL_CONSTRUCTION_ACCEPTED,
 
 	/// RakVoice plugin - Open a communication channel
 	ID_RAKVOICE_OPEN_CHANNEL_REQUEST,
@@ -206,8 +197,6 @@ enum DefaultMessageIDTypes
 	ID_AUTOPATCHER_PATCH_LIST,
 	/// Autopatcher plugin - Returned to the user: An error from the database repository for the autopatcher.
 	ID_AUTOPATCHER_REPOSITORY_FATAL_ERROR,
-	/// Autopatcher plugin - Returned to the user: The server does not allow downloading unmodified game files.
-	ID_AUTOPATCHER_CANNOT_DOWNLOAD_ORIGINAL_UNMODIFIED_FILES,
 	/// Autopatcher plugin - Finished getting all files from the autopatcher
 	ID_AUTOPATCHER_FINISHED_INTERNAL,
 	ID_AUTOPATCHER_FINISHED,
@@ -217,22 +206,16 @@ enum DefaultMessageIDTypes
 	/// NATPunchthrough plugin: internal
 	ID_NAT_PUNCHTHROUGH_REQUEST,
 	/// NATPunchthrough plugin: internal
-	//ID_NAT_GROUP_PUNCHTHROUGH_REQUEST,
-	/// NATPunchthrough plugin: internal
-	//ID_NAT_GROUP_PUNCHTHROUGH_REPLY,
-	/// NATPunchthrough plugin: internal
 	ID_NAT_CONNECT_AT_TIME,
 	/// NATPunchthrough plugin: internal
 	ID_NAT_GET_MOST_RECENT_PORT,
 	/// NATPunchthrough plugin: internal
 	ID_NAT_CLIENT_READY,
-	/// NATPunchthrough plugin: internal
-	//ID_NAT_GROUP_PUNCHTHROUGH_FAILURE_NOTIFICATION,
 
 	/// NATPunchthrough plugin: Destination system is not connected to the server. Bytes starting at offset 1 contains the
 	///  RakNetGUID destination field of NatPunchthroughClient::OpenNAT().
 	ID_NAT_TARGET_NOT_CONNECTED,
-	/// NATPunchthrough plugin: Destination system is not responding to ID_NAT_GET_MOST_RECENT_PORT. Possibly the plugin is not installed.
+	/// NATPunchthrough plugin: Destination system is not responding to the plugin messages. Possibly the plugin is not installed.
 	///  Bytes starting at offset 1 contains the RakNetGUID  destination field of NatPunchthroughClient::OpenNAT().
 	ID_NAT_TARGET_UNRESPONSIVE,
 	/// NATPunchthrough plugin: The server lost the connection to the destination system while setting up punchthrough.
@@ -245,7 +228,7 @@ enum DefaultMessageIDTypes
 	/// NATPunchthrough plugin: This message is generated on the local system, and does not come from the network.
 	///  packet::guid contains the destination field of NatPunchthroughClient::OpenNAT(). Byte 1 contains 1 if you are the sender, 0 if not
 	ID_NAT_PUNCHTHROUGH_FAILED,
-	/// NATPunchthrough plugin: Punchthrough succeeded. See packet::systemAddress and packet::guid. Byte 1 contains 1 if you are the sender,
+	/// NATPunchthrough plugin: Punchthrough suceeded. See packet::systemAddress and packet::guid. Byte 1 contains 1 if you are the sender,
 	///  0 if not. You can now use RakPeer::Connect() or other calls to communicate with this system.
 	ID_NAT_PUNCHTHROUGH_SUCCEEDED,
 
@@ -265,7 +248,7 @@ enum DefaultMessageIDTypes
 	/// Lobby packets. Second byte indicates type.
 	ID_LOBBY_GENERAL,
 
-	// RPC3, RPC4 error
+	// RPC3, RPC4Plugin error
 	ID_RPC_REMOTE_ERROR,
 	/// Plugin based replacement for RPC system
 	ID_RPC_PLUGIN,
@@ -284,9 +267,7 @@ enum DefaultMessageIDTypes
 	ID_LOBBY2_SEND_MESSAGE,
 	ID_LOBBY2_SERVER_ERROR,
 
-	/// Informs user of a new host GUID. Packet::Guid contains this new host RakNetGuid. The old host can be read out using BitStream->Read(RakNetGuid) starting on byte 1
-	/// This is not returned until connected to a remote system
-	/// If the oldHost is UNASSIGNED_RAKNET_GUID, then this is the first time the host has been determined
+	/// Informs user of a new host GUID. Packet::Guid contains this RakNetGuid
 	ID_FCM2_NEW_HOST,
 	/// \internal For FullyConnectedMesh2 plugin
 	ID_FCM2_REQUEST_FCMGUID,
@@ -294,38 +275,6 @@ enum DefaultMessageIDTypes
 	ID_FCM2_RESPOND_CONNECTION_COUNT,
 	/// \internal For FullyConnectedMesh2 plugin
 	ID_FCM2_INFORM_FCMGUID,
-	/// \internal For FullyConnectedMesh2 plugin
-	ID_FCM2_UPDATE_MIN_TOTAL_CONNECTION_COUNT,
-	/// A remote system (not necessarily the host) called FullyConnectedMesh2::StartVerifiedJoin() with our system as the client
-	/// Use FullyConnectedMesh2::GetVerifiedJoinRequiredProcessingList() to read systems
-	/// For each system, attempt NatPunchthroughClient::OpenNAT() and/or RakPeerInterface::Connect()
-	/// When this has been done for all systems, the remote system will automatically be informed of the results
-	/// \note Only the designated client gets this message
-	/// \note You won't get this message if you are already connected to all target systems
-	/// \note If you fail to connect to a system, this does not automatically mean you will get ID_FCM2_VERIFIED_JOIN_FAILED as that system may have been shutting down from the host too
-	/// \sa FullyConnectedMesh2::StartVerifiedJoin()
-	ID_FCM2_VERIFIED_JOIN_START,
-	/// \internal The client has completed processing for all systems designated in ID_FCM2_VERIFIED_JOIN_START
-	ID_FCM2_VERIFIED_JOIN_CAPABLE,
-	/// Client failed to connect to a required systems notified via FullyConnectedMesh2::StartVerifiedJoin()
-	/// RakPeerInterface::CloseConnection() was automatically called for all systems connected due to ID_FCM2_VERIFIED_JOIN_START 
-	/// Programmer should inform the player via the UI that they cannot join this session, and to choose a different session
-	/// \note Server normally sends us this message, however if connection to the server was lost, message will be returned locally
-	/// \note Only the designated client gets this message
-	ID_FCM2_VERIFIED_JOIN_FAILED,
-	/// The system that called StartVerifiedJoin() got ID_FCM2_VERIFIED_JOIN_CAPABLE from the client and then called RespondOnVerifiedJoinCapable() with true
-	/// AddParticipant() has automatically been called for this system
-	/// Use GetVerifiedJoinAcceptedAdditionalData() to read any additional data passed to RespondOnVerifiedJoinCapable()
-	/// \note All systems in the mesh get this message
-	/// \sa RespondOnVerifiedJoinCapable()
-	ID_FCM2_VERIFIED_JOIN_ACCEPTED,
-	/// The system that called StartVerifiedJoin() got ID_FCM2_VERIFIED_JOIN_CAPABLE from the client and then called RespondOnVerifiedJoinCapable() with false
-	/// CloseConnection() has been automatically called for each system connected to since ID_FCM2_VERIFIED_JOIN_START.
-	/// The connection is NOT automatically closed to the original host that sent StartVerifiedJoin()
-	/// Use GetVerifiedJoinRejectedAdditionalData() to read any additional data passed to RespondOnVerifiedJoinCapable()
-	/// \note Only the designated client gets this message
-	/// \sa RespondOnVerifiedJoinCapable()
-	ID_FCM2_VERIFIED_JOIN_REJECTED,
 
 	/// UDP proxy messages. Second byte indicates type.
 	ID_UDP_PROXY_GENERAL,
@@ -368,58 +317,20 @@ enum DefaultMessageIDTypes
 	/// \internal Used by the team balancer plugin
 	ID_TEAM_BALANCER_INTERNAL,
 	/// Cannot switch to the desired team because it is full. However, if someone on that team leaves, you will
-	///  get ID_TEAM_BALANCER_TEAM_ASSIGNED later.
-	/// For TeamBalancer: Byte 1 contains the team you requested to join. Following bytes contain NetworkID of which member
-	ID_TEAM_BALANCER_REQUESTED_TEAM_FULL,
+	///  get ID_TEAM_BALANCER_SET_TEAM later. Byte 1 contains the team you requested to join.
+	ID_TEAM_BALANCER_REQUESTED_TEAM_CHANGE_PENDING,
 	/// Cannot switch to the desired team because all teams are locked. However, if someone on that team leaves,
-	///  you will get ID_TEAM_BALANCER_SET_TEAM later.
-	/// For TeamBalancer: Byte 1 contains the team you requested to join.
-	ID_TEAM_BALANCER_REQUESTED_TEAM_LOCKED,
-	ID_TEAM_BALANCER_TEAM_REQUESTED_CANCELLED,
-	/// Team balancer plugin informing you of your team. Byte 1 contains the team you requested to join. Following bytes contain NetworkID of which member.
+	///  you will get ID_TEAM_BALANCER_SET_TEAM later. Byte 1 contains the team you requested to join.
+	ID_TEAM_BALANCER_TEAMS_LOCKED,
+	/// Team balancer plugin informing you of your team. Byte 1 contains the team you requested to join.
 	ID_TEAM_BALANCER_TEAM_ASSIGNED,
 
-	/// Gamebryo Lightspeed integration
+	/// Gamebryo Lightspeed
 	ID_LIGHTSPEED_INTEGRATION,
 
-	/// XBOX integration
-	ID_XBOX_LOBBY,
-
-	/// The password we used to challenge the other system passed, meaning the other system has called TwoWayAuthentication::AddPassword() with the same password we passed to TwoWayAuthentication::Challenge()
-	/// You can read the identifier used to challenge as follows:
-	/// RakNet::BitStream bs(packet->data, packet->length, false); bs.IgnoreBytes(sizeof(RakNet::MessageID)); RakNet::RakString password; bs.Read(password);
-	ID_TWO_WAY_AUTHENTICATION_INCOMING_CHALLENGE_SUCCESS,
-	ID_TWO_WAY_AUTHENTICATION_OUTGOING_CHALLENGE_SUCCESS,
-	/// A remote system sent us a challenge using TwoWayAuthentication::Challenge(), and the challenge failed.
-	/// If the other system must pass the challenge to stay connected, you should call RakPeer::CloseConnection() to terminate the connection to the other system. 
-	ID_TWO_WAY_AUTHENTICATION_INCOMING_CHALLENGE_FAILURE,
-	/// The other system did not add the password we used to TwoWayAuthentication::AddPassword()
-	/// You can read the identifier used to challenge as follows:
-	/// RakNet::BitStream bs(packet->data, packet->length, false); bs.IgnoreBytes(sizeof(MessageID)); RakNet::RakString password; bs.Read(password);
-	ID_TWO_WAY_AUTHENTICATION_OUTGOING_CHALLENGE_FAILURE,
-	/// The other system did not respond within a timeout threshhold. Either the other system is not running the plugin or the other system was blocking on some operation for a long time.
-	/// You can read the identifier used to challenge as follows:
-	/// RakNet::BitStream bs(packet->data, packet->length, false); bs.IgnoreBytes(sizeof(MessageID)); RakNet::RakString password; bs.Read(password);
-	ID_TWO_WAY_AUTHENTICATION_OUTGOING_CHALLENGE_TIMEOUT,
-	/// \internal
-	ID_TWO_WAY_AUTHENTICATION_NEGOTIATION,
-
-	/// CloudClient / CloudServer
-	ID_CLOUD_POST_REQUEST,
-	ID_CLOUD_RELEASE_REQUEST,
-	ID_CLOUD_GET_REQUEST,
-	ID_CLOUD_GET_RESPONSE,
-	ID_CLOUD_UNSUBSCRIBE_REQUEST,
-	ID_CLOUD_SERVER_TO_SERVER_COMMAND,
-	ID_CLOUD_SUBSCRIPTION_NOTIFICATION,
-
-	// LibVoice
-	ID_LIB_VOICE,
-
-	ID_RELAY_PLUGIN,
-	ID_NAT_REQUEST_BOUND_ADDRESSES,
-	ID_NAT_RESPOND_BOUND_ADDRESSES,
-	ID_FCM2_UPDATE_USER_CONTEXT,
+	// So I can add more without changing user enumerations
+	ID_RESERVED_1,
+	ID_RESERVED_2,
 	ID_RESERVED_3,
 	ID_RESERVED_4,
 	ID_RESERVED_5,
@@ -429,7 +340,14 @@ enum DefaultMessageIDTypes
 	ID_RESERVED_9,
 
 	// For the user to use.  Start your first enumeration at this value.
-	ID_USER_PACKET_ENUM
+	ID_USER_PACKET_ENUM,
+	ID_MODIFIED_PACKET,
+	ID_PLAYER_SYNC,
+	ID_VEHICLE_SYNC,
+	ID_PASSENGER_SYNC,
+	ID_RCON_COMMAND,
+	ID_RCON_RESPONSE,
+
 	//-------------------------------------------------------------------------------------------------------------
  
 };

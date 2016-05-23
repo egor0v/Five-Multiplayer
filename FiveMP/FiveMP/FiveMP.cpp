@@ -6,7 +6,7 @@ using namespace std;
 int main(void) {
 	SetConsoleTitle("FiveMP Launcher");
 
-	const char *dllname = "m0d-s0beit-v.dll";
+	const char *dllname = "FiveMP_Client.dll";
 
 	bool GameThread = false;
 	char GamePath[MAX_PATH] = { 0 };
@@ -89,6 +89,7 @@ int main(void) {
 				GameThread = false;
 			}
 		}
+		Sleep(1000);
 	}
 	Sleep(5000);
 	//FindNativeTableAddress();

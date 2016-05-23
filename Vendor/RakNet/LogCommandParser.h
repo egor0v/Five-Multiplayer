@@ -1,16 +1,9 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file
 /// \brief Contains LogCommandParser , Used to send logs to connected consoles
 ///
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 #include "NativeFeatureIncludes.h"
 #if _RAKNET_SUPPORT_LogCommandParser==1
@@ -43,7 +36,7 @@ public:
 	/// \param[in] transport The transport interface we can use to write to
 	/// \param[in] systemAddress The player that sent this command.
 	/// \param[in] originalString The string that was actually sent over the network, in case you want to do your own parsing
-	bool OnCommand(const char *command, unsigned numParameters, char **parameterList, TransportInterface *transport, const SystemAddress &systemAddress, const char *originalString);
+	bool OnCommand(const char *command, unsigned numParameters, char **parameterList, TransportInterface *transport, SystemAddress systemAddress, const char *originalString);
 
 	/// You are responsible for overriding this function and returning a static string, which will identifier your parser.
 	/// This should return a static string
@@ -53,7 +46,7 @@ public:
 	/// A callback for when you are expected to send a brief description of your parser to \a systemAddress
 	/// \param[in] transport The transport interface we can use to write to
 	/// \param[in] systemAddress The player that requested help.
-	void SendHelp(TransportInterface *transport, const SystemAddress &systemAddress);
+	void SendHelp(TransportInterface *transport, SystemAddress systemAddress);
 
 	/// All logs must be associated with a channel.  This is a filter so that remote clients only get logs for a system they care about.
 	// If you call Log with a channel that is unknown, that channel will automatically be added
@@ -69,12 +62,12 @@ public:
 	/// A callback for when \a systemAddress has connected to us.
 	/// \param[in] systemAddress The player that has connected.
 	/// \param[in] transport The transport interface that sent us this information.  Can be used to send messages to this or other players.
-	void OnNewIncomingConnection(const SystemAddress &systemAddress, TransportInterface *transport);
+	void OnNewIncomingConnection(SystemAddress systemAddress, TransportInterface *transport);
 
 	/// A callback for when \a systemAddress has disconnected, either gracefully or forcefully
 	/// \param[in] systemAddress The player that has disconnected.
 	/// \param[in] transport The transport interface that sent us this information.
-	void OnConnectionLost(const SystemAddress &systemAddress, TransportInterface *transport);
+	void OnConnectionLost(SystemAddress systemAddress, TransportInterface *transport);
 
 	/// This is called every time transport interface is registered.  If you want to save a copy of the TransportInterface pointer
 	/// This is the place to do it
@@ -84,17 +77,17 @@ protected:
 	/// Sends the currently active channels to the user
 	/// \param[in] systemAddress The player to send to
 	/// \param[in] transport The transport interface to use to send the channels
-	void PrintChannels(const SystemAddress &systemAddress, TransportInterface *transport) const;
+	void PrintChannels(SystemAddress systemAddress, TransportInterface *transport) const;
 
 	/// Unsubscribe a user from a channel (or from all channels)
 	/// \param[in] systemAddress The player to unsubscribe to
 	/// \param[in] channelName If 0, then unsubscribe from all channels.  Otherwise unsubscribe from the named channel
-	unsigned Unsubscribe(const SystemAddress &systemAddress, const char *channelName);
+	unsigned Unsubscribe(SystemAddress systemAddress, const char *channelName);
 
 	/// Subscribe a user to a channel (or to all channels)
 	/// \param[in] systemAddress The player to subscribe to
 	/// \param[in] channelName If 0, then subscribe from all channels.  Otherwise subscribe to the named channel
-	unsigned Subscribe(const SystemAddress &systemAddress, const char *channelName);
+	unsigned Subscribe(SystemAddress systemAddress, const char *channelName);
 
 	/// Given the name of a channel, return the index into channelNames where it is located
 	/// \param[in] channelName The name of the channel

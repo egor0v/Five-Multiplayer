@@ -1,13 +1,3 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 // If you want to change these defines, put them in NativeFeatureIncludesOverrides so your changes are not lost when updating RakNet
 // The user should not edit this file
 #include "NativeFeatureIncludesOverrides.h"
@@ -33,7 +23,6 @@
 // #define _RAKNET_SUPPORT_Router2 0
 // #define _RAKNET_SUPPORT_RPC4Plugin 0
 // #define _RAKNET_SUPPORT_TeamBalancer 0
-// #define _RAKNET_SUPPORT_TeamManager 0
 // #define _RAKNET_SUPPORT_UDPProxyClient 0
 // #define _RAKNET_SUPPORT_UDPProxyCoordinator 0
 // #define _RAKNET_SUPPORT_UDPProxyServer 0
@@ -45,9 +34,7 @@
 // #define _RAKNET_SUPPORT_RakNetCommandParser 0
 // #define _RAKNET_SUPPORT_EmailSender 0
 // #define _RAKNET_SUPPORT_HTTPConnection 0
-// #define _RAKNET_SUPPORT_HTTPConnection2 0
 // #define _RAKNET_SUPPORT_PacketizedTCP 0
-// #define _RAKNET_SUPPORT_TwoWayAuthentication 0
 
 // SET DEFAULTS IF UNDEFINED
 #ifndef LIBCAT_SECURITY
@@ -101,9 +88,6 @@
 #ifndef _RAKNET_SUPPORT_TeamBalancer
 #define _RAKNET_SUPPORT_TeamBalancer 1
 #endif
-#ifndef _RAKNET_SUPPORT_TeamManager
-#define _RAKNET_SUPPORT_TeamManager 1
-#endif
 #ifndef _RAKNET_SUPPORT_UDPProxyClient
 #define _RAKNET_SUPPORT_UDPProxyClient 1
 #endif
@@ -137,41 +121,8 @@
 #ifndef _RAKNET_SUPPORT_HTTPConnection
 #define _RAKNET_SUPPORT_HTTPConnection 1
 #endif
-#ifndef _RAKNET_SUPPORT_HTTPConnection2
-#define _RAKNET_SUPPORT_HTTPConnection2 1
-#endif
 #ifndef _RAKNET_SUPPORT_PacketizedTCP
 #define _RAKNET_SUPPORT_PacketizedTCP 1
-#endif
-#ifndef _RAKNET_SUPPORT_TwoWayAuthentication
-#define _RAKNET_SUPPORT_TwoWayAuthentication 1
-#endif
-#ifndef _RAKNET_SUPPORT_CloudClient
-#define _RAKNET_SUPPORT_CloudClient 1
-#endif
-#ifndef _RAKNET_SUPPORT_CloudServer
-#define _RAKNET_SUPPORT_CloudServer 1
-#endif
-#ifndef _RAKNET_SUPPORT_DynDNS
-#define _RAKNET_SUPPORT_DynDNS 1
-#endif
-#ifndef _RAKNET_SUPPORT_Rackspace
-#define _RAKNET_SUPPORT_Rackspace 1
-#endif
-#ifndef _RAKNET_SUPPORT_FileOperations
-#define _RAKNET_SUPPORT_FileOperations 1
-#endif
-#ifndef _RAKNET_SUPPORT_UDPForwarder
-#define _RAKNET_SUPPORT_UDPForwarder 1
-#endif
-#ifndef _RAKNET_SUPPORT_StatisticsHistory
-#define _RAKNET_SUPPORT_StatisticsHistory 1
-#endif
-#ifndef _RAKNET_SUPPORT_LibVoice
-#define _RAKNET_SUPPORT_LibVoice 0
-#endif
-#ifndef _RAKNET_SUPPORT_RelayPlugin
-#define _RAKNET_SUPPORT_RelayPlugin 1
 #endif
 
 // Take care of dependencies
@@ -191,16 +142,6 @@
 #undef _RAKNET_SUPPORT_TCPInterface
 #define _RAKNET_SUPPORT_TCPInterface 1
 #endif
-
-
-
-
-
-
-
-
-
-
 
 
 #endif // __NATIVE_FEATURE_INCLDUES_H

@@ -1,13 +1,3 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 #include "SuperFastHash.h"
 #include "NativeTypes.h"
 #include <stdlib.h>
@@ -17,18 +7,19 @@
 #endif
 
 #undef get16bits
-
 #if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) \
   || defined(_MSC_VER) || defined (__BORLANDC__) || defined (__TURBOC__)
 #define get16bits(d) (*((const uint16_t *) (d)))
-#else
+#endif
+
+#if !defined (get16bits)
 #define get16bits(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8)\
-	+(uint32_t)(((const uint8_t *)(d))[0]) )
+                       +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
 
 static const int INCREMENTAL_READ_BLOCK=65536;
 
-uint32_t SuperFastHash (const char * data, int length)
+unsigned int SuperFastHash (const char * data, int length)
 {
 	// All this is necessary or the hash does not match SuperFastHashIncremental
 	int bytesRemaining=length;
@@ -48,7 +39,7 @@ uint32_t SuperFastHash (const char * data, int length)
 
 //	return SuperFastHashIncremental(data,len,len);
 }
-uint32_t SuperFastHashIncremental (const char * data, int len, unsigned int lastHash )
+unsigned int SuperFastHashIncremental (const char * data, int len, unsigned int lastHash )
 {
 	uint32_t hash = (uint32_t) lastHash;
 	uint32_t tmp;
@@ -92,21 +83,21 @@ uint32_t SuperFastHashIncremental (const char * data, int len, unsigned int last
 	hash ^= hash << 25;
 	hash += hash >> 6;
 
-	return (uint32_t) hash;
+	return (unsigned int) hash;
 
 }
 
-uint32_t SuperFastHashFile (const char * filename)
+unsigned int SuperFastHashFile (const char * filename)
 {
 	FILE *fp = fopen(filename, "rb");
 	if (fp==0)
 		return 0;
-	uint32_t hash = SuperFastHashFilePtr(fp);
+	unsigned int hash = SuperFastHashFilePtr(fp);
 	fclose(fp);
 	return hash;
 }
 
-uint32_t SuperFastHashFilePtr (FILE *fp)
+unsigned int SuperFastHashFilePtr (FILE *fp)
 {
 	fseek(fp, 0, SEEK_END);
 	int length = ftell(fp);

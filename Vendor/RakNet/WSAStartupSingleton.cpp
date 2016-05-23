@@ -1,27 +1,10 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 #include "WSAStartupSingleton.h"
 
-
-
-
-
-#if   defined(_WIN32) && !defined(WINDOWS_STORE_RT)
+#if defined(_XBOX) || defined(X360)
+                                                                                             
+#elif defined(_WIN32)
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-
-
-
-
 #endif
 #include "RakNetDefines.h"
 #include <stdio.h>
@@ -32,21 +15,21 @@ WSAStartupSingleton::WSAStartupSingleton() {}
 WSAStartupSingleton::~WSAStartupSingleton() {}
 void WSAStartupSingleton::AddRef(void)
 {
-#if defined(_WIN32) && !defined(WINDOWS_STORE_RT)
+#ifdef _WIN32
 
 	refCount++;
 	
 	if (refCount!=1)
 		return;
 
-
-
-
+#if defined(_XBOX) || defined(X360)
+               
+#endif
 
 	WSADATA winsockInfo;
 	if ( WSAStartup( MAKEWORD( 2, 2 ), &winsockInfo ) != 0 )
 	{
-#if  defined(_DEBUG) && !defined(WINDOWS_PHONE_8)
+#if !defined(_XBOX) && !defined(X360) && defined(_DEBUG)
 		DWORD dwIOError = GetLastError();
 		LPVOID messageBuffer;
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -63,7 +46,7 @@ void WSAStartupSingleton::AddRef(void)
 }
 void WSAStartupSingleton::Deref(void)
 {
-#if defined(_WIN32) && !defined(WINDOWS_STORE_RT)
+#ifdef _WIN32
 	if (refCount==0)
 		return;
 		
@@ -75,9 +58,9 @@ void WSAStartupSingleton::Deref(void)
 	
 	WSACleanup();
 
-
-
-
+#if defined(_XBOX) || defined(X360)
+                
+#endif
 
 	
 	refCount=0;

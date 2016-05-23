@@ -1,13 +1,3 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 #include "StringTable.h"
 #include <string.h>
 #include "RakAssert.h"
@@ -81,7 +71,11 @@ void StringTable::AddString(const char *str, bool copyString)
 	}
 
 	// If it asserts inside here you are adding duplicate strings.
-	orderedStringList.Insert(sab.str,sab, true, _FILE_AND_LINE_);
+	if (orderedStringList.Insert(sab.str,sab, true, _FILE_AND_LINE_)!=(unsigned)-1)
+	{
+		if (copyString)
+			RakNet::OP_DELETE(sab.str, _FILE_AND_LINE_);
+	}
 
 	// If this assert hits you need to increase the range of StringTableType
 	RakAssert(orderedStringList.Size() < (StringTableType)-1);	
@@ -108,7 +102,7 @@ void StringTable::EncodeString( const char *input, int maxCharsToWrite, RakNet::
 
 bool StringTable::DecodeString( char *output, int maxCharsToWrite, RakNet::BitStream *input )
 {
-	bool hasIndex=false;
+	bool hasIndex;
 	RakAssert(maxCharsToWrite>0);
 
 	if (maxCharsToWrite==0)

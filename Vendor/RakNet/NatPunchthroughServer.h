@@ -1,17 +1,9 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file
 /// \brief Contains the NAT-punchthrough plugin for the server.
 ///
-
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 #include "NativeFeatureIncludes.h"
 #if _RAKNET_SUPPORT_NatPunchthroughServer==1
@@ -42,7 +34,7 @@ class PacketLogger;
 /// \ingroup PLUGINS_GROUP
 
 /// \ingroup NAT_PUNCHTHROUGH_GROUP
-struct RAK_DLL_EXPORT NatPunchthroughServerDebugInterface
+struct NatPunchthroughServerDebugInterface
 {
 	NatPunchthroughServerDebugInterface() {}
 	virtual ~NatPunchthroughServerDebugInterface() {}
@@ -50,14 +42,14 @@ struct RAK_DLL_EXPORT NatPunchthroughServerDebugInterface
 };
 
 /// \ingroup NAT_PUNCHTHROUGH_GROUP
-struct RAK_DLL_EXPORT NatPunchthroughServerDebugInterface_Printf : public NatPunchthroughServerDebugInterface
+struct NatPunchthroughServerDebugInterface_Printf : public NatPunchthroughServerDebugInterface
 {
 	virtual void OnServerMessage(const char *msg);
 };
 
 #if _RAKNET_SUPPORT_PacketLogger==1
 /// \ingroup NAT_PUNCHTHROUGH_GROUP
-struct RAK_DLL_EXPORT NatPunchthroughServerDebugInterface_PacketLogger : public NatPunchthroughServerDebugInterface
+struct NatPunchthroughServerDebugInterface_PacketLogger : public NatPunchthroughServerDebugInterface
 {
 	// Set to non-zero to write to the packetlogger!
 	PacketLogger *pl;
@@ -98,8 +90,8 @@ public:
 	virtual PluginReceiveResult OnReceive(Packet *packet);
 
 	/// \internal For plugin handling
-	virtual void OnClosedConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason );
-	virtual void OnNewConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID, bool isIncoming);
+	virtual void OnClosedConnection(SystemAddress systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason );
+	virtual void OnNewConnection(SystemAddress systemAddress, RakNetGUID rakNetGUID, bool isIncoming);
 
 	// Each connected user has a ready state. Ready means ready for nat punchthrough.
 	struct User;
@@ -108,7 +100,7 @@ public:
 		ConnectionAttempt() {sender=0; recipient=0; startTime=0; attemptPhase=NAT_ATTEMPT_PHASE_NOT_STARTED;}
 		User *sender, *recipient;
 		uint16_t sessionId;
-		RakNet::Time startTime;
+		RakNet::TimeMS startTime;
 		enum
 		{
 			NAT_ATTEMPT_PHASE_NOT_STARTED,
@@ -121,7 +113,6 @@ public:
 		SystemAddress systemAddress;
 		unsigned short mostRecentPort;
 		bool isReady;
-		DataStructures::OrderedList<RakNetGUID,RakNetGUID> groupPunchthroughRequests;
 
 		DataStructures::List<ConnectionAttempt *> connectionAttempts;
 		bool HasConnectionAttemptToUser(User *user);
@@ -129,7 +120,7 @@ public:
 		void DeleteConnectionAttempt(ConnectionAttempt *ca);
 		void LogConnectionAttempts(RakNet::RakString &rs);
 	};
-	RakNet::Time lastUpdate;
+	RakNet::TimeMS lastUpdate;
 	static int NatPunchthroughUserComp( const RakNetGUID &key, User * const &data );
 protected:
 	void OnNATPunchthroughRequest(Packet *packet);
@@ -143,9 +134,6 @@ protected:
 	void StartPunchthroughForUser(User*user);
 	uint16_t sessionId;
 	NatPunchthroughServerDebugInterface *natPunchthroughServerDebugInterface;
-
-	SystemAddress boundAddresses[MAXIMUM_NUMBER_OF_INTERNAL_IDS];
-	unsigned char boundAddressCount;
 
 };
 

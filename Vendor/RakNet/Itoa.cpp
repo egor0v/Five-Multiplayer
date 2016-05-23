@@ -1,18 +1,3 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-#include "EmptyHeader.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 // Fast itoa from http://www.jb.man.ac.uk/~slowe/cpp/itoa.html for Linux since it seems like Linux doesn't support this function.
 // I modified it to remove the std dependencies.
@@ -59,6 +44,3 @@ char* Itoa( int value, char* result, int base )
 	return result;
 }
 
-#ifdef __cplusplus
-}
-#endif

@@ -1,29 +1,19 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file
 /// \brief \b [Internal] Encapsulates a mutex
 ///
-
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 
 #ifndef __SIMPLE_MUTEX_H
 #define __SIMPLE_MUTEX_H
 
 #include "RakMemoryOverride.h"
-
-
-#if   defined(_WIN32)
+#if defined(_XBOX) || defined(X360)
+                            
+#elif defined(_WIN32)
 #include "WindowsIncludes.h"
-
-
 #else
 #include <pthread.h>
 #include <sys/types.h>
@@ -52,19 +42,10 @@ public:
 
 	// Unlocks the mutex.
 	void Unlock(void);
-
-
-
-
-
-
-
 private:
 	void Init(void);
 #ifdef _WIN32
 	CRITICAL_SECTION criticalSection; /// Docs say this is faster than a mutex for single process access
-
-
 #else
 	pthread_mutex_t hMutex;
 #endif

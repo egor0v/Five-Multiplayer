@@ -1,17 +1,9 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file
 /// \brief If _USE_RAK_MEMORY_OVERRIDE is defined, memory allocations go through rakMalloc, rakRealloc, and rakFree
 ///
-
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 
 #ifndef __RAK_MEMORY_H
@@ -21,21 +13,19 @@
 #include "RakNetDefines.h"
 #include <new>
 
-
-
-
-
-
+#if defined(_PS3) || defined(__PS3__) || defined(SN_TARGET_PS3)
+                                                                             
+#endif
 
 #include "RakAlloca.h"
 
-// #if _USE_RAK_MEMORY_OVERRIDE==1
-// 	#if defined(new)
-// 		#pragma push_macro("new")
-// 		#undef new
-// 		#define RMO_NEW_UNDEF
-// 	#endif
-// #endif
+#if _USE_RAK_MEMORY_OVERRIDE==1
+	#if defined(new)
+		#pragma push_macro("new")
+		#undef new
+		#define RMO_NEW_UNDEF
+	#endif
+#endif
 
 
 // These pointers are statically and globally defined in RakMemoryOverride.cpp
@@ -234,11 +224,11 @@ void UseRaknetFixedHeap(size_t initialCapacity,
 // Free memory allocated from UseRaknetFixedHeap
 void FreeRakNetFixedHeap(void);
 
-// #if _USE_RAK_MEMORY_OVERRIDE==1
-// 	#if defined(RMO_NEW_UNDEF)
-// 	#pragma pop_macro("new")
-// 	#undef RMO_NEW_UNDEF
-// 	#endif
-// #endif
+#if _USE_RAK_MEMORY_OVERRIDE==1
+	#if defined(RMO_NEW_UNDEF)
+	#pragma pop_macro("new")
+	#undef RMO_NEW_UNDEF
+	#endif
+#endif
 
 #endif

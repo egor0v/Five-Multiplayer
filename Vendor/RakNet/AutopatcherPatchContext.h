@@ -1,20 +1,14 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
+///
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+/// Usage of RakNet is subject to the appropriate license agreement.
+///
 
 #ifndef __AUTOPATCHER_PATCH_CONTEXT_H
 #define __AUTOPATCHER_PATCH_CONTEXT_H
 
 enum PatchContext
 {
-	PC_HASH_1_WITH_PATCH,
-	PC_HASH_2_WITH_PATCH,
+	PC_HASH_WITH_PATCH,
 	PC_WRITE_FILE,
 	PC_ERROR_FILE_WRITE_FAILURE,
 	PC_ERROR_PATCH_TARGET_MISSING,

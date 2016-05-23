@@ -1,13 +1,3 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 #ifndef __THREAD_POOL_H
 #define __THREAD_POOL_H
 
@@ -186,16 +176,11 @@ protected:
 	RakNet::SimpleMutex numThreadsRunningMutex;
 
 	RakNet::SignaledEvent quitAndIncomingDataEvents;
-
-// #if defined(SN_TARGET_PSP2)
-// 	RakNet::RakThread::UltUlThreadRuntime *runtime;
-// #endif
 };
 
 #include "ThreadPool.h"
 #include "RakSleep.h"
 #ifdef _WIN32
-
 #else
 #include <unistd.h>
 #endif
@@ -215,13 +200,8 @@ void* WorkerThread( void* arguments )
 #endif
 */
 {
-
-
-
-	ThreadPool<ThreadInputType, ThreadOutputType> *threadPool = (ThreadPool<ThreadInputType, ThreadOutputType>*) arguments;
-
-
 	bool returnOutput;
+	ThreadPool<ThreadInputType, ThreadOutputType> *threadPool = (ThreadPool<ThreadInputType, ThreadOutputType>*) arguments;
 	ThreadOutputType (*userCallback)(ThreadInputType, bool *, void*);
 	ThreadInputType inputData;
 	ThreadOutputType callbackOutput;
@@ -243,15 +223,12 @@ void* WorkerThread( void* arguments )
 
 	while (1)
 	{
-//#ifdef _WIN32
+#ifdef _WIN32
 		if (userCallback==0)
 		{
-			threadPool->quitAndIncomingDataEvents.WaitOnEvent(1000);
-		}
-// #else
-// 		if (userCallback==0)
-// 			RakSleep(30);
-// #endif
+			threadPool->quitAndIncomingDataEvents.WaitOnEvent(INFINITE);
+		}		
+#endif
 
 		threadPool->runThreadsMutex.Lock();
 		if (threadPool->runThreads==false)
@@ -301,11 +278,7 @@ void* WorkerThread( void* arguments )
 	else if (threadPool->threadDataInterface)
 		threadPool->threadDataInterface->PerThreadDestructor(perThreadData, threadPool->tdiContext);
 
-
-
-
 	return 0;
-
 }
 template <class InputType, class OutputType>
 ThreadPool<InputType, OutputType>::ThreadPool()
@@ -328,14 +301,9 @@ bool ThreadPool<InputType, OutputType>::StartThreads(int numThreads, int stackSi
 {
 	(void) stackSize;
 
-// #if defined(SN_TARGET_PSP2)
-// 	runtime = RakNet::RakThread::AllocRuntime(numThreads);
-// #endif
-
 	runThreadsMutex.Lock();
 	if (runThreads==true)
 	{
-		// Already running
 		runThreadsMutex.Unlock();
 		return false;
 	}
@@ -356,13 +324,7 @@ bool ThreadPool<InputType, OutputType>::StartThreads(int numThreads, int stackSi
 	int i;
 	for (i=0; i < numThreads; i++)
 	{
-		int errorCode;
-
-
-
-
-		errorCode = RakNet::RakThread::Create(WorkerThread<InputType, OutputType>, this);
-
+		int errorCode = RakNet::RakThread::Create(WorkerThread<InputType, OutputType>, this);
 		if (errorCode!=0)
 		{
 			StopThreads();
@@ -415,12 +377,6 @@ void ThreadPool<InputType, OutputType>::StopThreads(void)
 	}
 
 	quitAndIncomingDataEvents.CloseEvent();
-
-// #if defined(SN_TARGET_PSP2)
-// 	RakNet::RakThread::DeallocRuntime(runtime);
-// 	runtime=0;
-// #endif
-
 }
 template <class InputType, class OutputType>
 void ThreadPool<InputType, OutputType>::AddInput(OutputType (*workerThreadCallback)(InputType, bool *returnOutput, void* perThreadData), InputType inputData)

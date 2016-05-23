@@ -1,19 +1,8 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file FileOperations.h
 ///
-
-
-#include "NativeFeatureIncludes.h"
-#if _RAKNET_SUPPORT_FileOperations==1
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 #ifndef __FILE_OPERATIONS_H
 #define __FILE_OPERATIONS_H
@@ -28,5 +17,3 @@ bool RAK_DLL_EXPORT DirectoryExists(const char *directory);
 unsigned int RAK_DLL_EXPORT GetFileLength(const char *path);
 
 #endif
-
-#endif // _RAKNET_SUPPORT_FileOperations

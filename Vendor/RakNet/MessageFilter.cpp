@@ -1,13 +1,3 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 #include "NativeFeatureIncludes.h"
 #if _RAKNET_SUPPORT_MessageFilter==1
 
@@ -15,10 +5,8 @@
 #include "RakAssert.h"
 #include "GetTime.h"
 #include "MessageIdentifiers.h"
-#include "RakAssert.h"
 #include "RakPeerInterface.h"
-#include "PacketizedTCP.h"
-#include "BitStream.h"
+#include "RakAssert.h"
 
 #ifdef _MSC_VER
 #pragma warning( push )
@@ -29,6 +17,16 @@ using namespace RakNet;
 int RakNet::MessageFilterStrComp( char *const &key,char *const &data )
 {
 	return strcmp(key,data);
+}
+
+int RakNet::FilteredSystemComp( const SystemAddress &key, const FilteredSystem &data )
+{
+	if (key < data.systemAddress)
+		return -1;
+	else if (key==data.systemAddress)
+		return 0;
+	else
+		return 1;
 }
 
 int RakNet::FilterSetComp( const int &key, FilterSet * const &data )
@@ -44,7 +42,7 @@ STATIC_FACTORY_DEFINITIONS(MessageFilter,MessageFilter);
 
 MessageFilter::MessageFilter()
 {
-		whenLastTimeoutCheck=RakNet::GetTime();
+
 }
 MessageFilter::~MessageFilter()
 {
@@ -62,29 +60,17 @@ void MessageFilter::SetAllowMessageID(bool allow, int messageIDStart, int messag
 	for (i=messageIDStart; i <= messageIDEnd; ++i)
 		filterSet->allowedIDs[i]=allow;
 }
-void MessageFilter::SetAllowRPC4(bool allow, const char* uniqueID, int filterSetID)
+void MessageFilter::SetAllowRPC(bool allow, const char *functionName, int filterSetID)
 {
+	(void) allow;
 	FilterSet *filterSet = GetFilterSetByID(filterSetID);
 	bool objectExists;
-	unsigned int idx = filterSet->allowedRPC4.GetIndexFromKey(uniqueID, &objectExists);
-	if (allow)
+	unsigned index = filterSet->allowedRPCs.GetIndexFromKey((char *const) functionName, &objectExists);
+	if (objectExists==false)
 	{
-		if (objectExists==false)
-		{
-			filterSet->allowedRPC4.InsertAtIndex(uniqueID, idx, _FILE_AND_LINE_);
-			filterSet->allowedIDs[ID_RPC_PLUGIN]=true;
-		}
-	}
-	else
-	{
-		if (objectExists==true)
-		{
-			filterSet->allowedRPC4.RemoveAtIndex(idx);
-			if (filterSet->allowedRPC4.Size()==0)
-			{
-				filterSet->allowedIDs[ID_RPC_PLUGIN]=false;
-			}
-		}
+		char *str = (char*) rakMalloc_Ex( strlen(functionName)+1, _FILE_AND_LINE_ );
+		strcpy(str, functionName);
+		filterSet->allowedRPCs.InsertAtIndex(str, index, _FILE_AND_LINE_);
 	}
 }
 void MessageFilter::SetActionOnDisallowedMessage(bool kickOnDisallowed, bool banOnDisallowed, RakNet::TimeMS banTimeMS, int filterSetID)
@@ -94,13 +80,13 @@ void MessageFilter::SetActionOnDisallowedMessage(bool kickOnDisallowed, bool ban
 	filterSet->disallowedMessageBanTimeMS=banTimeMS;
 	filterSet->banOnDisallowedMessage=banOnDisallowed;
 }
-void MessageFilter::SetDisallowedMessageCallback(int filterSetID, void *userData, void (*invalidMessageCallback)(RakPeerInterface *peer, AddressOrGUID systemAddress, int filterSetID, void *userData, unsigned char messageID))
+void MessageFilter::SetDisallowedMessageCallback(int filterSetID, void *userData, void (*invalidMessageCallback)(RakPeerInterface *peer, SystemAddress systemAddress, int filterSetID, void *userData, unsigned char messageID))
 {
 	FilterSet *filterSet = GetFilterSetByID(filterSetID);
 	filterSet->invalidMessageCallback=invalidMessageCallback;
 	filterSet->disallowedCallbackUserData=userData;
 }
-void MessageFilter::SetTimeoutCallback(int filterSetID, void *userData, void (*invalidMessageCallback)(RakPeerInterface *peer, AddressOrGUID systemAddress, int filterSetID, void *userData))
+void MessageFilter::SetTimeoutCallback(int filterSetID, void *userData, void (*invalidMessageCallback)(RakPeerInterface *peer, SystemAddress systemAddress, int filterSetID, void *userData))
 {
 	FilterSet *filterSet = GetFilterSetByID(filterSetID);
 	filterSet->timeoutCallback=invalidMessageCallback;
@@ -113,73 +99,79 @@ void MessageFilter::SetFilterMaxTime(int allowedTimeMS, bool banOnExceed, RakNet
 	filterSet->banOnFilterTimeExceed=banOnExceed;
 	filterSet->timeExceedBanTimeMS=banTimeMS;
 }
-int MessageFilter::GetSystemFilterSet(AddressOrGUID systemAddress)
+int MessageFilter::GetSystemFilterSet(SystemAddress systemAddress)
 {
-// 	bool objectExists;
-// 	unsigned index = systemList.GetIndexFromKey(systemAddress, &objectExists);
-// 	if (objectExists==false)
-// 		return -1;
-// 	else
-// 		return systemList[index].filter->filterSetID;
-
-	DataStructures::HashIndex index = systemList.GetIndexOf(systemAddress);
-	if (index.IsInvalid())
+	bool objectExists;
+	unsigned index = systemList.GetIndexFromKey(systemAddress, &objectExists);
+	if (objectExists==false)
 		return -1;
 	else
-		return systemList.ItemAtIndex(index).filter->filterSetID;
+		return systemList[index].filter->filterSetID;
 }
-void MessageFilter::SetSystemFilterSet(AddressOrGUID addressOrGUID, int filterSetID)
+void MessageFilter::SetSystemFilterSet(SystemAddress systemAddress, int filterSetID)
 {
 	// Allocate this filter set if it doesn't exist.
-	RakAssert(addressOrGUID.IsUndefined()==false);
-//	bool objectExists;
-// 	unsigned index = systemList.GetIndexFromKey(addressOrGUID, &objectExists);
-// 	if (objectExists==false)
-	DataStructures::HashIndex index = systemList.GetIndexOf(addressOrGUID);
-	if (index.IsInvalid())
+	RakAssert(systemAddress!=UNASSIGNED_SYSTEM_ADDRESS);
+	bool objectExists;
+	unsigned index = systemList.GetIndexFromKey(systemAddress, &objectExists);
+	if (objectExists==false)
 	{
 		if (filterSetID<0)
 			return;
 
 		FilteredSystem filteredSystem;
 		filteredSystem.filter = GetFilterSetByID(filterSetID);
-	//	filteredSystem.addressOrGUID=addressOrGUID;
+		filteredSystem.systemAddress=systemAddress;
 		filteredSystem.timeEnteredThisSet=RakNet::GetTimeMS();
-	//	systemList.Insert(addressOrGUID, filteredSystem, true, _FILE_AND_LINE_);
-		systemList.Push(addressOrGUID,filteredSystem,_FILE_AND_LINE_);
+		systemList.Insert(systemAddress, filteredSystem, true, _FILE_AND_LINE_);
 	}
 	else
 	{
 		if (filterSetID>=0)
 		{
 			FilterSet *filterSet = GetFilterSetByID(filterSetID);
-			systemList.ItemAtIndex(index).timeEnteredThisSet=RakNet::GetTimeMS();
-			systemList.ItemAtIndex(index).filter=filterSet;
+			systemList[index].timeEnteredThisSet=RakNet::GetTimeMS();
+			systemList[index].filter=filterSet;
 		}
 		else
 		{
-			systemList.RemoveAtIndex(index, _FILE_AND_LINE_);
+			systemList.RemoveAtIndex(index);
 		}
 	}	
 }
 unsigned MessageFilter::GetSystemCount(int filterSetID) const
 {
 	if (filterSetID==-1)
-	{
 		return systemList.Size();
-	}
 	else
 	{
 		unsigned i;
 		unsigned count=0;
-		DataStructures::List< FilteredSystem > itemList;
-		DataStructures::List< AddressOrGUID > keyList;
-		systemList.GetAsList(itemList, keyList, _FILE_AND_LINE_);
-		for (i=0; i < itemList.Size(); i++)
-			if (itemList[i].filter->filterSetID==filterSetID)
+		for (i=0; i < systemList.Size(); i++)
+			if (systemList[i].filter->filterSetID==filterSetID)
 				++count;
 		return count;
 	}
+}
+SystemAddress MessageFilter::GetSystemByIndex(int filterSetID, unsigned index)
+{
+	if (filterSetID==-1)
+		return systemList[index].systemAddress;
+	else
+	{
+		unsigned i;
+		unsigned count=0;
+		for (i=0; i < systemList.Size(); i++)
+		{
+			if (systemList[i].filter->filterSetID==filterSetID)
+			{
+				if (index==count)
+					return systemList[i].systemAddress;
+				count++;
+			}
+		}
+	}
+	return UNASSIGNED_SYSTEM_ADDRESS;
 }
 unsigned MessageFilter::GetFilterSetCount(void) const
 {
@@ -201,18 +193,6 @@ void MessageFilter::DeleteFilterSet(int filterSetID)
 		DeallocateFilterSet(filterSet);
 		filterList.RemoveAtIndex(index);
 
-		DataStructures::List< FilteredSystem > itemList;
-		DataStructures::List< AddressOrGUID > keyList;
-		systemList.GetAsList(itemList, keyList, _FILE_AND_LINE_);
-		for (i=0; i < itemList.Size(); i++)
-		{
-			if (itemList[i].filter==filterSet)
-			{
-				systemList.Remove(keyList[i], _FILE_AND_LINE_);
-			}
-		}
-
-		/*
 		// Don't reference this pointer any longer
 		i=0;
 		while (i < systemList.Size())
@@ -222,19 +202,21 @@ void MessageFilter::DeleteFilterSet(int filterSetID)
 			else
 				++i;
 		}
-		*/
 	}
 }
 void MessageFilter::Clear(void)
 {
 	unsigned i;
-	systemList.Clear(_FILE_AND_LINE_);
+	systemList.Clear(false, _FILE_AND_LINE_);
 	for (i=0; i < filterList.Size(); i++)
 		DeallocateFilterSet(filterList[i]);
 	filterList.Clear(false, _FILE_AND_LINE_);
 }
 void MessageFilter::DeallocateFilterSet(FilterSet* filterSet)
 {
+	unsigned i;
+	for (i=0; i < filterSet->allowedRPCs.Size(); i++)
+		rakFree_Ex(filterSet->allowedRPCs[i], _FILE_AND_LINE_ );
 	RakNet::OP_DELETE(filterSet, _FILE_AND_LINE_);
 }
 FilterSet* MessageFilter::GetFilterSetByID(int filterSetID)
@@ -263,95 +245,69 @@ FilterSet* MessageFilter::GetFilterSetByID(int filterSetID)
 		return newFilterSet;
 	}
 }
-void MessageFilter::OnInvalidMessage(FilterSet *filterSet, AddressOrGUID systemAddress, unsigned char messageID)
+void MessageFilter::OnInvalidMessage(FilterSet *filterSet, SystemAddress systemAddress, unsigned char messageID)
 {
 	if (filterSet->invalidMessageCallback)
 		filterSet->invalidMessageCallback(rakPeerInterface, systemAddress, filterSet->filterSetID, filterSet->disallowedCallbackUserData, messageID);
-	if (filterSet->banOnDisallowedMessage && rakPeerInterface)
+	if (filterSet->banOnDisallowedMessage)
 	{
 		char str1[64];
-		systemAddress.systemAddress.ToString(false, str1);
+		systemAddress.ToString(false, str1);
 		rakPeerInterface->AddToBanList(str1, filterSet->disallowedMessageBanTimeMS);
 	}
 	if (filterSet->kickOnDisallowedMessage)
-	{
-		if (rakPeerInterface)
-			rakPeerInterface->CloseConnection(systemAddress, true, 0);
-#if _RAKNET_SUPPORT_PacketizedTCP==1 && _RAKNET_SUPPORT_TCPInterface==1
-		else
-			tcpInterface->CloseConnection(systemAddress.systemAddress);
-#endif
-	}
+		rakPeerInterface->CloseConnection(systemAddress, true, 0);
 }
 void MessageFilter::Update(void)
 {
 	// Update all timers for all systems.  If those systems' filter sets are expired, take the appropriate action.
-	RakNet::Time curTime = RakNet::GetTime();
-	if (GreaterThan(curTime - 1000, whenLastTimeoutCheck))
+	RakNet::TimeMS time = RakNet::GetTimeMS();
+	unsigned index;
+	index=0;
+	while (index < systemList.Size())
 	{
-		DataStructures::List< FilteredSystem > itemList;
-		DataStructures::List< AddressOrGUID > keyList;
-		systemList.GetAsList(itemList, keyList, _FILE_AND_LINE_);
-
-		unsigned int index;
-		for (index=0; index < itemList.Size(); index++)
+		if (systemList[index].filter &&
+			systemList[index].filter->maxMemberTimeMS>0 &&
+			time-systemList[index].timeEnteredThisSet >= systemList[index].filter->maxMemberTimeMS)
 		{
-			if (itemList[index].filter &&
-				itemList[index].filter->maxMemberTimeMS>0 &&
-				curTime-itemList[index].timeEnteredThisSet >= itemList[index].filter->maxMemberTimeMS)
+			if (systemList[index].filter->timeoutCallback)
+				systemList[index].filter->timeoutCallback(rakPeerInterface, systemList[index].systemAddress, systemList[index].filter->filterSetID, systemList[index].filter->timeoutUserData);
+
+			if (systemList[index].filter->banOnFilterTimeExceed)
 			{
-				if (itemList[index].filter->timeoutCallback)
-					itemList[index].filter->timeoutCallback(rakPeerInterface, keyList[index], itemList[index].filter->filterSetID, itemList[index].filter->timeoutUserData);
-
-				if (itemList[index].filter->banOnFilterTimeExceed && rakPeerInterface)
-				{
-					char str1[64];
-					keyList[index].ToString(false, str1);
-					rakPeerInterface->AddToBanList(str1, itemList[index].filter->timeExceedBanTimeMS);
-				}
-				if (rakPeerInterface)
-					rakPeerInterface->CloseConnection(keyList[index], true, 0);
-#if _RAKNET_SUPPORT_PacketizedTCP==1 && _RAKNET_SUPPORT_TCPInterface==1
-				else
-					tcpInterface->CloseConnection(keyList[index].systemAddress);
-#endif
-
-				systemList.Remove(keyList[index], _FILE_AND_LINE_);
+				char str1[64];
+				systemList[index].systemAddress.ToString(false, str1);
+				rakPeerInterface->AddToBanList(str1, systemList[index].filter->timeExceedBanTimeMS);
 			}
+			rakPeerInterface->CloseConnection(systemList[index].systemAddress, true, 0);
+			systemList.RemoveAtIndex(index);
 		}
-
-		whenLastTimeoutCheck=curTime+1000;
+		else
+			++index;
 	}
 }
-void MessageFilter::OnNewConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID, bool isIncoming)
+void MessageFilter::OnNewConnection(SystemAddress systemAddress, RakNetGUID rakNetGUID, bool isIncoming)
 {
 	(void) systemAddress;
 	(void) rakNetGUID;
 	(void) isIncoming;
 
-	AddressOrGUID aog;
-	aog.rakNetGuid=rakNetGUID;
-	aog.systemAddress=systemAddress;
-
 	// New system, automatically assign to filter set if appropriate
-	if (autoAddNewConnectionsToFilter>=0 && systemList.HasData(aog)==false)
-		SetSystemFilterSet(aog, autoAddNewConnectionsToFilter);
+	if (autoAddNewConnectionsToFilter>=0 && systemList.HasData(systemAddress)==false)
+		SetSystemFilterSet(systemAddress, autoAddNewConnectionsToFilter);
 }
-void MessageFilter::OnClosedConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason )
+void MessageFilter::OnClosedConnection(SystemAddress systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason )
 {
 	(void) rakNetGUID;
 	(void) lostConnectionReason;
 
-	AddressOrGUID aog;
-	aog.rakNetGuid=rakNetGUID;
-	aog.systemAddress=systemAddress;
-
 	// Lost system, remove from the list
-	systemList.Remove(aog, _FILE_AND_LINE_);
+	systemList.RemoveIfExists(systemAddress);
 }
  PluginReceiveResult MessageFilter::OnReceive(Packet *packet)
 {
-	DataStructures::HashIndex index;
+	bool objectExists;
+	unsigned index;
 	unsigned char messageId;
 
 	switch (packet->data[0]) 
@@ -383,26 +339,13 @@ void MessageFilter::OnClosedConnection(const SystemAddress &systemAddress, RakNe
 		else
 			messageId=packet->data[0];
 		// If this system is filtered, check if this message is allowed.  If not allowed, return RR_STOP_PROCESSING_AND_DEALLOCATE
-		// index = systemList.GetIndexFromKey(packet->addressOrGUID, &objectExists);
-		index = systemList.GetIndexOf(packet);
-		if (index.IsInvalid())
+		index = systemList.GetIndexFromKey(packet->systemAddress, &objectExists);
+		if (objectExists==false)
 			break;
-		if (systemList.ItemAtIndex(index).filter->allowedIDs[messageId]==false)
+		if (systemList[index].filter->allowedIDs[messageId]==false)
 		{
-			OnInvalidMessage(systemList.ItemAtIndex(index).filter, packet, packet->data[0]);
+			OnInvalidMessage(systemList[index].filter, packet->systemAddress, packet->data[0]);
 			return RR_STOP_PROCESSING_AND_DEALLOCATE;
-		}
-		if (packet->data[0]==ID_RPC_PLUGIN)
-		{
-			RakNet::BitStream bsIn(packet->data,packet->length,false);
-			bsIn.IgnoreBytes(2);
-			RakNet::RakString functionName;
-			bsIn.ReadCompressed(functionName);
-			if (systemList.ItemAtIndex(index).filter->allowedRPC4.HasData(functionName)==false)
-			{
-				OnInvalidMessage(systemList.ItemAtIndex(index).filter, packet, packet->data[0]);
-				return RR_STOP_PROCESSING_AND_DEALLOCATE;
-			}
 		}
 		
 		break;

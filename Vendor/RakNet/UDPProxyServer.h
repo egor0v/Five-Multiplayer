@@ -1,25 +1,24 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file
 /// \brief A RakNet plugin performing networking to communicate with UDPProxyServer. It allows UDPProxyServer to control our instance of UDPForwarder.
 ///
-
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
+/// Creative Commons Licensees are subject to the
+/// license found at
+/// http://creativecommons.org/licenses/by-nc/2.5/
+/// Single application licensees are subject to the license found at
+/// http://www.jenkinssoftware.com/SingleApplicationLicense.html
+/// Custom license users are subject to the terms therein.
 
 #include "NativeFeatureIncludes.h"
-#if _RAKNET_SUPPORT_UDPProxyServer==1 && _RAKNET_SUPPORT_UDPForwarder==1
+#if _RAKNET_SUPPORT_UDPProxyServer==1
 
 #ifndef __UDP_PROXY_SERVER_H
 #define __UDP_PROXY_SERVER_H
 
 #include "Export.h"
+#include "DS_Multilist.h"
 #include "RakNetTypes.h"
 #include "PluginInterface2.h"
 #include "UDPForwarder.h"
@@ -72,10 +71,6 @@ public:
 	UDPProxyServer();
 	~UDPProxyServer();
 
-	/// Sets the socket family to use, either IPV4 or IPV6
-	/// \param[in] socketFamily For IPV4, use AF_INET (default). For IPV6, use AF_INET6. To autoselect, use AF_UNSPEC.
-	void SetSocketFamily(unsigned short _socketFamily);
-
 	/// Receives the results of calling LoginToCoordinator()
 	/// Set before calling LoginToCoordinator or you won't know what happened
 	/// \param[in] resultHandler 
@@ -86,11 +81,6 @@ public:
 	/// \pre Coordinator must have set a password with UDPProxyCoordinator::SetRemoteLoginPassword()
 	/// \returns false if already logged in, or logging in. Returns true otherwise
 	bool LoginToCoordinator(RakNet::RakString password, SystemAddress coordinatorAddress);
-
-	/// \brief The server IP reported to the client is the IP address from the server to the coordinator.
-	/// If the server and coordinator are on the same LAN, you need to call SetServerPublicIP() to tell the client what address to connect to
-	/// \param[in] ip IP address to report in UDPProxyClientResultHandler::OnForwardingSuccess() and UDPProxyClientResultHandler::OnForwardingNotification() as proxyIPAddress
-	void SetServerPublicIP(RakString ip);
 
 	/// Operative class that performs the forwarding
 	/// Exposed so you can call UDPForwarder::SetMaxForwardEntries() if you want to change away from the default
@@ -103,19 +93,17 @@ public:
 	/// \internal
 	virtual void Update(void);
 	virtual PluginReceiveResult OnReceive(Packet *packet);
-	virtual void OnClosedConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason );
+	virtual void OnClosedConnection(SystemAddress systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason );
 	virtual void OnRakPeerStartup(void);
 	virtual void OnRakPeerShutdown(void);
 
 protected:
 	void OnForwardingRequestFromCoordinatorToServer(Packet *packet);
 
-	DataStructures::OrderedList<SystemAddress, SystemAddress> loggingInCoordinators;
-	DataStructures::OrderedList<SystemAddress, SystemAddress> loggedInCoordinators;
+	DataStructures::Multilist<ML_ORDERED_LIST, SystemAddress> loggingInCoordinators;
+	DataStructures::Multilist<ML_ORDERED_LIST, SystemAddress> loggedInCoordinators;
 
 	UDPProxyServerResultHandler *resultHandler;
-	unsigned short socketFamily;
-	RakString serverPublicIp;
 
 };
 

@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CD712CB3-C5BE-4F94-8855-747444022678}</ProjectGuid>
+    <RootNamespace>server</RootNamespace>
+    <ProjectName>FiveMP_Server</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <TypeLibraryName>.\Release/server.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\Vendor\RakNet\;$(SolutionDir)..\Vendor\squirrel\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_VERSION=0x401;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>StdInc.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/server.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Release/vcmp-svr.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/server.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <TypeLibraryName>.\Debug/server.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\Vendor\RakNet\;$(SolutionDir)..\Vendor\squirrel\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>StdInc.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug/server.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)_d.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/vcmp-svr.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/server.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Shared\CXML.cpp" />
+    <ClCompile Include="..\Shared\TinyXML\ticpp.cpp" />
+    <ClCompile Include="..\Shared\TinyXML\tinystr.cpp" />
+    <ClCompile Include="..\Shared\TinyXML\tinyxml.cpp" />
+    <ClCompile Include="..\Shared\TinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="..\Shared\TinyXML\tinyxmlparser.cpp" />
+    <ClCompile Include="CCheckPoints.cpp" />
+    <ClCompile Include="CConfig.cpp" />
+    <ClCompile Include="CHttpClient.cpp" />
+    <ClCompile Include="CMasterList.cpp" />
+    <ClCompile Include="CNetworkManager.cpp" />
+    <ClCompile Include="CObject.cpp" />
+    <ClCompile Include="CObjectManager.cpp" />
+    <ClCompile Include="CPickup.cpp" />
+    <ClCompile Include="CPickupManager.cpp" />
+    <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="CPlayerManager.cpp" />
+    <ClCompile Include="CPlugin.cpp" />
+    <ClCompile Include="CPlugins.cpp" />
+    <ClCompile Include="CRcon.cpp" />
+    <ClCompile Include="CScript.cpp" />
+    <ClCompile Include="CScripts.cpp" />
+    <ClCompile Include="CSpawnSelection.cpp" />
+    <ClCompile Include="CText.cpp" />
+    <ClCompile Include="CTextManager.cpp" />
+    <ClCompile Include="CTimerPool.cpp" />
+    <ClCompile Include="CVehicle.cpp" />
+    <ClCompile Include="CVehicleManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="netrpc.cpp" />
+    <ClCompile Include="sq_functions.cpp" />
+    <ClCompile Include="sq_graphic_natives.cpp" />
+    <ClCompile Include="sq_misc_natives.cpp" />
+    <ClCompile Include="sq_player_natives.cpp" />
+    <ClCompile Include="sq_script_natives.cpp" />
+    <ClCompile Include="sq_timer_natives.cpp" />
+    <ClCompile Include="sq_utils.cpp" />
+    <ClCompile Include="sq_vehicle_natives.cpp" />
+    <ClCompile Include="StdInc.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Shared\CXML.h" />
+    <ClInclude Include="..\Shared\TinyXML\ticpp.h" />
+    <ClInclude Include="..\Shared\TinyXML\ticpprc.h" />
+    <ClInclude Include="..\Shared\TinyXML\tinystr.h" />
+    <ClInclude Include="..\Shared\TinyXML\tinyxml.h" />
+    <ClInclude Include="CCheckPoints.h" />
+    <ClInclude Include="CConfig.h" />
+    <ClInclude Include="CHttpClient.h" />
+    <ClInclude Include="CMasterList.h" />
+    <ClInclude Include="CMaths.h" />
+    <ClInclude Include="CNetworkManager.h" />
+    <ClInclude Include="CObject.h" />
+    <ClInclude Include="CObjectManager.h" />
+    <ClInclude Include="CPickup.h" />
+    <ClInclude Include="CPickupManager.h" />
+    <ClInclude Include="CPlayer.h" />
+    <ClInclude Include="CPlayerManager.h" />
+    <ClInclude Include="CPlugin.h" />
+    <ClInclude Include="CPlugins.h" />
+    <ClInclude Include="CRcon.h" />
+    <ClInclude Include="CScript.h" />
+    <ClInclude Include="CScripts.h" />
+    <ClInclude Include="CSpawnSelection.h" />
+    <ClInclude Include="CText.h" />
+    <ClInclude Include="CTextManager.h" />
+    <ClInclude Include="CTimerPool.h" />
+    <ClInclude Include="CVector3.h" />
+    <ClInclude Include="CVehicle.h" />
+    <ClInclude Include="CVehicleManager.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="netrpc.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="sq_functions.h" />
+    <ClInclude Include="sq_graphic_natives.h" />
+    <ClInclude Include="sq_misc_natives.h" />
+    <ClInclude Include="sq_player_natives.h" />
+    <ClInclude Include="sq_script_natives.h" />
+    <ClInclude Include="sq_timer_natives.h" />
+    <ClInclude Include="sq_utils.h" />
+    <ClInclude Include="sq_vehicle_natives.h" />
+    <ClInclude Include="StdInc.h" />
+    <ClInclude Include="system.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="server.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="svr.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vendor\RakNet\RakNet.vcxproj">
+      <Project>{6d20e5ea-dbfc-4681-b533-843e5ade0205}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Vendor\squirrel\squirrel.vcxproj">
+      <Project>{c71eb676-ccac-40e8-b499-2be23494e8c4}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

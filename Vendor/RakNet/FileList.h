@@ -1,19 +1,8 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file FileList.h
 ///
-
-
-#include "NativeFeatureIncludes.h"
-#if _RAKNET_SUPPORT_FileOperations==1
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 #ifndef __FILE_LIST
 #define __FILE_LIST
@@ -104,7 +93,7 @@ public:
 	/// \param[in] bytesBeingSent How many bytes we are sending this push
 	/// \param[in] done If this file is now done with this push
 	/// \param[in] targetSystem Who we are sending to
-	virtual void OnFilePush(const char *fileName, unsigned int fileLengthBytes, unsigned int offset, unsigned int bytesBeingSent, bool done, SystemAddress targetSystem, unsigned short setId)
+	virtual void OnFilePush(const char *fileName, unsigned int fileLengthBytes, unsigned int offset, unsigned int bytesBeingSent, bool done, SystemAddress targetSystem)
 	{
 		(void) fileName;
 		(void) fileLengthBytes;
@@ -112,20 +101,6 @@ public:
 		(void) bytesBeingSent;
 		(void) done;
 		(void) targetSystem;
-        (void) setId;
-	}
-
-	/// \brief This function is called when all files have been read and are being transferred to a remote system
-	virtual void OnFilePushesComplete( SystemAddress systemAddress, unsigned short setId )
-	{
-		(void) systemAddress;
-        (void) setId;
-	}
-
-	/// \brief This function is called when a send to a system was aborted (probably due to disconnection)
-	virtual void OnSendAborted( SystemAddress systemAddress )
-	{
-		(void) systemAddress;
 	}
 };
 
@@ -144,12 +119,6 @@ public:
 
 	/// Called for each directory, when that directory begins processing
 	virtual void OnDirectory(FileList *fileList, char *dir, unsigned int directoriesRemaining);
-
-	/// \brief This function is called when all files have been transferred to a particular remote system
-    virtual void OnFilePushesComplete( SystemAddress systemAddress, unsigned short setID );
-
-	/// \brief This function is called when a send to a system was aborted (probably due to disconnection)
-	virtual void OnSendAborted( SystemAddress systemAddress );
 };
 
 class RAK_DLL_EXPORT FileList
@@ -163,7 +132,7 @@ public:
 	/// \brief Add all the files at a given directory.
 	/// \param[in] applicationDirectory The first part of the path. This is not stored as part of the filename.  Use \ as the path delineator.
 	/// \param[in] subDirectory The rest of the path to the file. This is stored as a prefix to the filename
-	/// \param[in] writeHash The first 4 bytes is a hash of the file, with the remainder the actual file data (should \a writeData be true)
+	/// \param[in] writeHash The first SHA1_LENGTH bytes is a hash of the file, with the remainder the actual file data (should \a writeData be true)
 	/// \param[in] writeData Write the contents of each file
 	/// \param[in] recursive Whether or not to visit subdirectories
 	/// \param[in] context User defined byte to store with each file. Use for whatever you want.
@@ -219,8 +188,7 @@ public:
 	/// \param[in] fileLength Length of the file
 	/// \param[in] context User defined byte to store with each file. Use for whatever you want.
 	/// \param[in] isAReference Means that this is just a reference to a file elsewhere - does not actually have any data
-	/// \param[in] takeDataPointer If true, do not allocate dataLength. Just take the pointer passed to the \a data parameter
-	void AddFile(const char *filename, const char *fullPathToFile, const char *data, const unsigned dataLength, const unsigned fileLength, FileListNodeContext context, bool isAReference=false, bool takeDataPointer=false);
+	void AddFile(const char *filename, const char *fullPathToFile, const char *data, const unsigned dataLength, const unsigned fileLength, FileListNodeContext context, bool isAReference=false);
 
 	/// \brief Add a file, reading it from disk.
 	/// \param[in] filepath Complete path to the file, including the filename itself
@@ -232,27 +200,16 @@ public:
 	/// \param[in] applicationDirectory Prefixed to the path to each filename.  Use \ as the path delineator.
 	void DeleteFiles(const char *applicationDirectory);
 
-	/// \brief Adds a callback to get progress reports about what the file list instances do.
+	/// \brief Set a callback to get progress reports about what this class does.
 	/// \param[in] cb A pointer to an externally defined instance of FileListProgress. This pointer is held internally, so should remain valid as long as this class is valid.
-	void AddCallback(FileListProgress *cb);
-
-	/// \brief Removes a callback
-	/// \param[in] cb A pointer to an externally defined instance of FileListProgress that was previously added with AddCallback()
-	void RemoveCallback(FileListProgress *cb);
-
-	/// \brief Removes all callbacks
-	void ClearCallbacks(void);
-
-	/// Returns all callbacks added with AddCallback()
-	/// \param[out] callbacks The list is set to the list of callbacks
-	void GetCallbacks(DataStructures::List<FileListProgress*> &callbacks);
+	void SetCallback(FileListProgress *cb);
 
 	// Here so you can read it, but don't modify it
 	DataStructures::List<FileListNode> fileList;
 
 	static bool FixEndingSlash(char *str);
 protected:
-	DataStructures::List<FileListProgress*> fileListProgressCallbacks;
+	FileListProgress *callback;
 };
 
 } // namespace RakNet
@@ -262,5 +219,3 @@ protected:
 #endif
 
 #endif
-
-#endif // _RAKNET_SUPPORT_FileOperations

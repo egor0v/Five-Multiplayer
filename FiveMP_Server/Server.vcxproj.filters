@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Net">
+      <UniqueIdentifier>{bfafaba9-34bf-459a-92fb-fbccd8e11ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General">
+      <UniqueIdentifier>{ccd86b62-a557-45b4-b070-85916fb120e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{0e4080a3-52d0-4b67-8893-06be28336159}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{d1e6278e-990f-4f3a-a266-ae56398bf761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{9dc1de35-d5b9-46c8-8980-864c2af5127b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\TinyXML">
+      <UniqueIdentifier>{acd4ac14-5015-4bf4-9a5d-ed010e452a75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{699617cd-693d-4244-b9bc-62a16fc3c0b7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CCheckPoints.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CMasterList.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CNetworkManager.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectManager.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CPickupManager.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerManager.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpawnSelection.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CTextManager.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CVehicleManager.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="netrpc.cpp">
+      <Filter>Net</Filter>
+    </ClCompile>
+    <ClCompile Include="CConfig.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CHttpClient.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CObject.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CPickup.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CRcon.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CText.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CVehicle.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="CScript.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="CScripts.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="CTimerPool.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_functions.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_graphic_natives.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_misc_natives.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_player_natives.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_script_natives.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_timer_natives.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_utils.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="sq_vehicle_natives.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlugin.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlugins.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\CXML.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TinyXML\ticpp.cpp">
+      <Filter>Shared\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TinyXML\tinystr.cpp">
+      <Filter>Shared\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TinyXML\tinyxml.cpp">
+      <Filter>Shared\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TinyXML\tinyxmlerror.cpp">
+      <Filter>Shared\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\TinyXML\tinyxmlparser.cpp">
+      <Filter>Shared\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="StdInc.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CCheckPoints.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CMasterList.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CNetworkManager.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjectManager.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CPickupManager.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerManager.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpawnSelection.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CTextManager.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CVehicleManager.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="netrpc.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="CConfig.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CHttpClient.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CObject.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CPickup.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CRcon.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CText.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CVehicle.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="CScript.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="CScripts.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="CTimerPool.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_functions.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_graphic_natives.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_misc_natives.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_player_natives.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_script_natives.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_timer_natives.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_utils.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="sq_vehicle_natives.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlugin.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlugins.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\CXML.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\TinyXML\ticpp.h">
+      <Filter>Shared\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\TinyXML\ticpprc.h">
+      <Filter>Shared\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\TinyXML\tinystr.h">
+      <Filter>Shared\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\TinyXML\tinyxml.h">
+      <Filter>Shared\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h" />
+    <ClInclude Include="StdInc.h" />
+    <ClInclude Include="CMaths.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="CVector3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="server.ico">
+      <Filter>General</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="svr.rc">
+      <Filter>General</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

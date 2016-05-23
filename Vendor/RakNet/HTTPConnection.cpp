@@ -1,19 +1,22 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file
 /// \brief Contains HTTPConnection, used to communicate with web servers
 ///
+/// This file is part of RakNet Copyright 2008 Kevin Jenkins.
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
+/// Creative Commons Licensees are subject to the
+/// license found at
+/// http://creativecommons.org/licenses/by-nc/2.5/
+/// Single application licensees are subject to the license found at
+/// http://www.jenkinssoftware.com/SingleApplicationLicense.html
+/// Custom license users are subject to the terms therein.
+/// GPL license users are subject to the GNU General Public
+/// License as published by the Free
+/// Software Foundation; either version 2 of the License, or (at your
+/// option) any later version.
 
 #include "NativeFeatureIncludes.h"
-#if _RAKNET_SUPPORT_HTTPConnection==1 && _RAKNET_SUPPORT_TCPInterface==1
+#if _RAKNET_SUPPORT_HTTPConnection==1
 
 #include "TCPInterface.h"
 #include "HTTPConnection.h"
@@ -43,21 +46,12 @@ void HTTPConnection::Init(TCPInterface* _tcp, const char *_host, unsigned short 
 
 void HTTPConnection::Post(const char *remote_path, const char *data, const char *_contentType)
 {
-	OutgoingCommand op;
+	OutgoingPost op;
 	op.contentType=_contentType;
 	op.data=data;
 	op.remotePath=remote_path;
-	op.isPost=true;
-	outgoingCommand.Push(op, _FILE_AND_LINE_ );
+	outgoingPosts.Push(op, _FILE_AND_LINE_ );
 	//printf("Adding outgoing post\n");
-}
-
-void HTTPConnection::Get(const char *path)
-{
-	OutgoingCommand op;
-	op.remotePath=path;
-	op.isPost=false;
-	outgoingCommand.Push(op, _FILE_AND_LINE_ );
 }
 
 bool HTTPConnection::HasBadResponse(int *code, RakNet::RakString *data)
@@ -108,7 +102,7 @@ void HTTPConnection::Update(void)
 	{
 	case CS_NONE:
 		{
-			if (outgoingCommand.IsEmpty())
+			if (outgoingPosts.IsEmpty())
 				return;
 
 			//printf("Connecting\n");
@@ -137,48 +131,31 @@ void HTTPConnection::Update(void)
 	case CS_CONNECTED:
 		{
 			//printf("Connected\n");
-			if (outgoingCommand.IsEmpty())
+			if (outgoingPosts.IsEmpty())
 			{
 				//printf("Closed connection (nothing to do)\n");
 				CloseConnection();
 				return;
 			}
 
-#if OPEN_SSL_CLIENT_SUPPORT==1
+#if defined(OPEN_SSL_CLIENT_SUPPORT)
 			tcp->StartSSLClient(server);
 #endif
 
 			//printf("Sending request\n");
-			currentProcessingCommand = outgoingCommand.Pop();
-			RakString request;
-			if (currentProcessingCommand.isPost)
-			{
-				request.Set("POST %s HTTP/1.0\r\n"
-					"Host: %s:%i\r\n"
-					"Content-Type: %s\r\n"
-					"Content-Length: %u\r\n"
-					"\r\n"
-					"%s",
-					currentProcessingCommand.remotePath.C_String(),
-					host.C_String(),
-					port,
-					currentProcessingCommand.contentType.C_String(),
-					(unsigned) currentProcessingCommand.data.GetLength(),
-					currentProcessingCommand.data.C_String());
-			}
-			else
-			{
-				// request.Set("GET %s\r\n", host.C_String());
-				// http://www.jenkinssoftware.com/forum/index.php?topic=4601.0;topicseen
-				request.Set("GET %s HTTP/1.0\r\n"
-					"Host: %s:%i\r\n"
-					"\r\n",
-					currentProcessingCommand.remotePath.C_String(),
-					host.C_String(),
-					port);
-			}
-			
-		//	printf(request.C_String());
+			currentProcessingRequest = outgoingPosts.Pop();
+			RakString request("POST %s HTTP/1.0\r\n"
+				"Host: %s:%i\r\n"
+				"Content-Type: %s\r\n"
+				"Content-Length: %u\r\n"
+				"\r\n"
+				"%s",
+				currentProcessingRequest.remotePath.C_String(),
+				host.C_String(),
+				port,
+				currentProcessingRequest.contentType.C_String(),
+				(unsigned) currentProcessingRequest.data.GetLength(),
+				currentProcessingRequest.data.C_String());
 	//		request.URLEncode();
 			tcp->Send(request.C_String(), (unsigned int) request.GetLength(), server,false);
 			connectionState=CS_PROCESSING;
@@ -189,8 +166,8 @@ void HTTPConnection::Update(void)
 		}
 	}
 
-//	if (connectionState==CS_PROCESSING && currentProcessingCommand.data.IsEmpty()==false)
-//		outgoingCommand.PushAtHead(currentProcessingCommand);
+//	if (connectionState==CS_PROCESSING && currentProcessingRequest.data.IsEmpty()==false)
+//		outgoingPosts.PushAtHead(currentProcessingRequest);
 }
 bool HTTPConnection::HasRead(void) const
 {
@@ -205,10 +182,14 @@ RakString HTTPConnection::Read(void)
     // const char *start_of_body = strstr(resultStr.C_String(), "\r\n\r\n");
 	const char *start_of_body = strpbrk(resultStr.C_String(), "\001\002\003%");
     
-    if(start_of_body)
-		return RakNet::RakString::NonVariadic(start_of_body);
-	else
-		return resultStr;
+    if(! start_of_body)
+    {
+		return RakString();
+    }
+
+	// size_t len = strlen(start_of_body);
+	//printf("Returning result with length %i\n", len);
+	return RakNet::RakString::NonVariadic(start_of_body);
 }
 SystemAddress HTTPConnection::GetServerAddress(void) const
 {
@@ -247,10 +228,7 @@ void HTTPConnection::ProcessTCPPacket(Packet *packet)
 
 		// besides having the server close the connection, they may
 		// provide a length header and supply that many bytes
-		if(
-			// Why was start_of_body here? Makes the GET command fail
-			// start_of_body && 
-			connectionState == CS_PROCESSING)
+		if(start_of_body && connectionState == CS_PROCESSING)
 		{
 			/*
 			// The stupid programmer that wrote this originally didn't think that just because the header contains this value doesn't mean you got the whole message
@@ -261,29 +239,19 @@ void HTTPConnection::ProcessTCPPacket(Packet *packet)
 			else
 			{
 			*/
-				long length_of_headers;
-				if (start_of_body)
+				long length_of_headers = (long)(start_of_body + 4 - incomingData.C_String());
+
+				const char *length_header = strstr(incomingData, "\r\nLength: ");
+				if(length_header)
 				{
-					length_of_headers = (long)(start_of_body + 4 - incomingData.C_String());
-					const char *length_header = strstr(incomingData, "\r\nLength: ");
+					long length = atol(length_header + 10) + length_of_headers;
 
-					if(length_header)
+					if((long) incomingData.GetLength() >= length)
 					{
-						long length = atol(length_header + 10) + length_of_headers;
-
-						if((long) incomingData.GetLength() >= length)
-						{
-							//printf("Closed connection (Got all data due to length header)\n");
-							CloseConnection();
-						}
+						//printf("Closed connection (Got all data due to length header)\n");
+						CloseConnection();
 					}
 				}
-				else
-				{
-					// No processing needed
-				}
-
-				
 			//}
 		}
 	}

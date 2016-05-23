@@ -1,20 +1,12 @@
-/*
- *  Copyright (c) 2014, Oculus VR, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant 
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
 /// \file FileListTransfer.h
 /// \brief A plugin to provide a simple way to compress and incrementally send the files in the FileList structure.
 ///
-
+/// This file is part of RakNet Copyright 2003 Jenkins Software LLC
+///
+/// Usage of RakNet is subject to the appropriate license agreement.
 
 #include "NativeFeatureIncludes.h"
-#if _RAKNET_SUPPORT_FileListTransfer==1 && _RAKNET_SUPPORT_FileOperations==1
+#if _RAKNET_SUPPORT_FileListTransfer==1
 
 #ifndef __FILE_LIST_TRANFER_H
 #define __FILE_LIST_TRANFER_H
@@ -29,7 +21,6 @@
 #include "FileList.h"
 #include "DS_Queue.h"
 #include "SimpleMutex.h"
-#include "ThreadPool.h"
 
 namespace RakNet
 {
@@ -48,10 +39,10 @@ struct FileListReceiver;
 /// \details Similar to the DirectoryDeltaTransfer plugin, except that it doesn't send deltas based on pre-existing files or actually write the files to disk.
 ///
 /// Usage:
-/// Call SetupReceive to allow one file set to arrive.  The value returned by FileListTransfer::SetupReceive()<BR>
-/// is the setID that is allowed.<BR>
-/// It's up to you to transmit this value to the other system, along with information indicating what kind of files you want to get.<BR>
-/// The other system should then prepare a FileList and call FileListTransfer::Send(), passing the return value of FileListTransfer::SetupReceive()<BR>
+/// Call SetupReceive to allow one file set to arrive.  The value returned by FileListTransfer::SetupReceive()
+/// is the setID that is allowed.
+/// It's up to you to transmit this value to the other system, along with information indicating what kind of files you want to get.
+/// The other system should then prepare a FileList and call FileListTransfer::Send(), passing the return value of FileListTransfer::SetupReceive()
 /// as the \a setID parameter to FileListTransfer::Send()
 /// \ingroup FILE_LIST_TRANSFER_GROUP
 class RAK_DLL_EXPORT FileListTransfer : public PluginInterface2
@@ -63,11 +54,6 @@ public:
 
 	FileListTransfer();
 	virtual ~FileListTransfer();
-
-	/// \brief Optionally start worker threads when using _incrementalReadInterface for the Send() operation
-	/// \param[in] numThreads how many worker threads to start
-	/// \param[in] threadPriority Passed to the thread creation routine. Use THREAD_PRIORITY_NORMAL for Windows. For Linux based systems, you MUST pass something reasonable based on the thread priorities for your application.
-	void StartIncrementalReadThreads(int numThreads, int threadPriority=-99999);
 	
 	/// \brief Allows one corresponding Send() call from another system to arrive.
 	/// \param[in] handler The class to call on each file
@@ -83,8 +69,8 @@ public:
 	/// \param[in] setID The return value of SetupReceive() which was previously called on \a recipient
 	/// \param[in] priority Passed to RakPeerInterface::Send()
 	/// \param[in] orderingChannel Passed to RakPeerInterface::Send()
-	/// \param[in] _incrementalReadInterface If a file in \a fileList has no data, _incrementalReadInterface will be used to read the file in chunks of size \a chunkSize
-	/// \param[in] _chunkSize How large of a block of a file to read/send at once. Large values use more memory but transfer slightly faster.
+	/// \param[in] _incrementalReadInterface If a file in \a fileList has no data, filePullInterface will be used to read the file in chunks of size \a chunkSize
+	/// \param[in] _chunkSize How large of a block of a file to send at once
 	void Send(FileList *fileList, RakNet::RakPeerInterface *rakPeer, SystemAddress recipient, unsigned short setID, PacketPriority priority, char orderingChannel, IncrementalReadInterface *_incrementalReadInterface=0, unsigned int _chunkSize=262144*4*16);
 
 	/// Return number of files waiting to go out to a particular address
@@ -99,27 +85,20 @@ public:
 	/// \brief Is a handler passed to SetupReceive still running?
 	bool IsHandlerActive(unsigned short setId);
 
-	/// \brief Adds a callback to get progress reports about what the file list instances do.
+	/// \brief Set a callback to get progress reports about what the file list instances do.
 	/// \param[in] cb A pointer to an externally defined instance of FileListProgress. This pointer is held internally, so should remain valid as long as this class is valid.
-	void AddCallback(FileListProgress *cb);
+	void SetCallback(FileListProgress *cb);
 
-	/// \brief Removes a callback
-	/// \param[in] cb A pointer to an externally defined instance of FileListProgress that was previously added with AddCallback()
-	void RemoveCallback(FileListProgress *cb);
-
-	/// \brief Removes all callbacks
-	void ClearCallbacks(void);
-
-	/// Returns all callbacks added with AddCallback()
-	/// \param[out] callbacks The list is set to the list of callbacks
-	void GetCallbacks(DataStructures::List<FileListProgress*> &callbacks);
+	/// \returns what was sent to SetCallback
+	/// \return What was sent to SetCallback
+	FileListProgress *GetCallback(void) const;
 
 	/// \internal For plugin handling
 	virtual PluginReceiveResult OnReceive(Packet *packet);
 	/// \internal For plugin handling
 	virtual void OnRakPeerShutdown(void);
 	/// \internal For plugin handling
-	virtual void OnClosedConnection(const SystemAddress &systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason );
+	virtual void OnClosedConnection(SystemAddress systemAddress, RakNetGUID rakNetGUID, PI2_LostConnectionReason lostConnectionReason );
 	/// \internal For plugin handling
 	virtual void Update(void);
 
@@ -131,11 +110,11 @@ protected:
 
 	void OnReferencePush(Packet *packet, bool fullFile);
 	void OnReferencePushAck(Packet *packet);
-	void SendIRIToAddress(SystemAddress systemAddress, unsigned short setId);
+	void SendIRIToAddress(SystemAddress systemAddress);
 
 	DataStructures::Map<unsigned short, FileListReceiver*> fileListReceivers;
 	unsigned short setId;
-	DataStructures::List<FileListProgress*> fileListProgressCallbacks;
+	FileListProgress *callback;
 
 	struct FileToPush
 	{
@@ -143,39 +122,19 @@ protected:
 		PacketPriority packetPriority;
 		char orderingChannel;
 		unsigned int currentOffset;
-		////unsigned short setID;
+		unsigned short setID;
 		unsigned int setIndex;
 		IncrementalReadInterface *incrementalReadInterface;
 		unsigned int chunkSize;
 	};
 	struct FileToPushRecipient
 	{
-		unsigned int refCount;
-		SimpleMutex refCountMutex;
-		void DeleteThis(void);
-		void AddRef(void);
-		void Deref(void);
-
 		SystemAddress systemAddress;
-		unsigned short setId;
-
-		//// SimpleMutex filesToPushMutex;
 		DataStructures::Queue<FileToPush*> filesToPush;
 	};
-	DataStructures::List< FileToPushRecipient* > fileToPushRecipientList;
-	SimpleMutex fileToPushRecipientListMutex;
-	void RemoveFromList(FileToPushRecipient *ftpr);
-
-	struct ThreadData
-	{
-		FileListTransfer *fileListTransfer;
-		SystemAddress systemAddress;
-		unsigned short setId;
-	};
-
-	ThreadPool<ThreadData, int> threadPool;
-
-	friend int SendIRIToAddressCB(FileListTransfer::ThreadData threadData, bool *returnOutput, void* perThreadData);
+	DataStructures::List< FileToPushRecipient* > filesToPushAllSameAddress;
+	// TODO - overagressive, only one read can happen at a time. See SendIRIToAddress
+	SimpleMutex filesToPushAllSameAddressMutex;
 };
 
 } // namespace RakNet
