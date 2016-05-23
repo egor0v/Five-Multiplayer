@@ -3,7 +3,7 @@
 Five-Multiplayer is a multiplayer modification for the game called "Grand Theft Auto V" created by Rockstar Games and published by Take-Two Interactive Software.
 Five Multiplayer and Greybeard Inc. are in no way affiliated with Rockstar Games or Take-Two Interactive. The 'Grand Theft Auto' and the 'Grand Theft Auto' logos are trademarks of Take-Two Interactive Software. 
 
-This project uses RakNet, OpenVHook and parts of m0d-s0beit and CitizenMP - They are included in the repository.
+This project uses RakNet, OpenVHook and parts of m0d-s0beit and CitizenMP - They are included in the repository and the files should have their credits on the top. If not, let us know and we'll add it!
 
 # Compiling
 
