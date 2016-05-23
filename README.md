@@ -8,7 +8,7 @@ This project uses RakNet, OpenVHook and parts of m0d-s0beit and CitizenMP - They
 # Compiling
 
 In order to compile the mod, it is recommended to use *Visual Studio 2013* or [*Visual Studio CE (Community Edition) 2013*](https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx) if possible. Otherwise the mod may not work / may crash during the loading screen. *We've tried compiling the project with Visual Studio CE 2015 but to no avail, it crashed.*
-As of now, the mod may only be compiled in *debug mode x64*.
+As of now, the mod may only be compiled in *debug mode x64*. The main solution file can be found in *Five-Multiplayer\FiveMP (FiveMP.sln)*.
 
 # Binaries
 
