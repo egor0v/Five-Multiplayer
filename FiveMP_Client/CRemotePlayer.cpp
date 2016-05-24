@@ -196,8 +196,11 @@ void CRemotePlayer::UpdateOnFootPosition(Vector3 vPos)
 	//Call setPosition here with the ped pointer I guess TODO, should add a switch for parachuting here too
 	if (!m_pPlayerPed) return;
 	//CPlayerManager * pPlayerManager = pNetowkManager->GetPlayerManager();
+	/*
+	//No reason to have quaternions at least for now
 	float quat[4];
 	m_pPlayerPed->GetQuaternion(quat); //Seems to be a broken implementation.......
+	*/
 	Vector3 Position, FacingCoords;
 	m_pPlayerPed->GetPosition(&Position);
 	//We really need a switch case here for aim data, foot data, etc
@@ -205,21 +208,27 @@ void CRemotePlayer::UpdateOnFootPosition(Vector3 vPos)
 	float heading = atan2f(vPos.y, vPos.x) - atan2f(Position.y, Position.x);
 	DWORD timeTakes = GetTickCount() - m_pPlayerPed->GetTickNextAction();
 
+	if (m_bWasRunning && GetTickCount() > m_pPlayerPed->GetTickNextSprint() + timeTakes) { //Because they sprint in cycles..
+		AI::CLEAR_PED_TASKS_IMMEDIATELY((Ped)m_pPlayerPed->curPedPtr);
+		m_bWasRunning = false;
+	}
+
 	if (m_bHasAim || m_bShooting) {
 		// Update aiming...
 		RemotePlayerDecideShoot(vPos, Position, dist, timeTakes);
 	} else {
 		if (dist < 0.5 && (m_pPlayerPed->GetVelocity().x == 0 && m_pPlayerPed->GetVelocity().y == 0 && m_pPlayerPed->GetVelocity().z == 0)) {
 			FacingCoords = m_pPlayerPed->GetCoordsFromVecForUsingVec(m_vecForward, 5.0);
-			AI::TASK_TURN_PED_TO_FACE_COORD((Ped)m_pPlayerPed->curPedPtr, FacingCoords.x, FacingCoords.y, FacingCoords.z, 5000); //What's that last param? Maybe it's the turning speed or something?
+			AI::TASK_TURN_PED_TO_FACE_COORD((Ped)m_pPlayerPed->curPedPtr, FacingCoords.x, FacingCoords.y, FacingCoords.z, 500); //Duration, was 500 What's that last param? Maybe it's the turning speed or something?
 		} else {
 			if (dist > 0.5) {
 				//Just clamp the velocity if it's greater..
 				if (m_moveState == 1) {
 					if (STREAMING::HAS_ANIM_DICT_LOADED("move_p_m_zero")) {
 						if (GetTickCount() > m_pPlayerPed->GetTickNextSprint()) {
-							AI::TASK_PLAY_ANIM((Ped)m_pPlayerPed->curPedPtr, "move_p_m_zero", "sprint", 8.0f, 0.0f, -1, 32, 0, 0, 0, 0);
-							m_pPlayerPed->SetTickNextSprint(GetTickCount() + 1000.0); //Allow a second..
+							m_pPlayerPed->ChooseSprintingAnim((Entity)m_pPlayerPed->curPedPtr);
+							m_pPlayerPed->SetTickNextSprint(GetTickCount() + 1000); //Allow a second.. (was 1000)
+							m_bWasRunning = true;
 						}
 					}
 					m_pPlayerPed->SetRotation(m_playerRot.y, m_playerRot.z, m_playerRot.x);
@@ -234,9 +243,6 @@ void CRemotePlayer::UpdateOnFootPosition(Vector3 vPos)
 				m_pPlayerPed->SetRotation(0, m_playerRot.z, 0);
 			}
 		}
-	}
-	if (!m_speed.x && !m_speed.y && !m_speed.z) {
-		AI::TASK_PLAY_ANIM((Ped)m_pPlayerPed->curPedPtr, "move_p_m_zero", "idle", 8.0f, 0.0f, -1, 32, 0, 0, 0, 0);
 	}
 	m_pPlayerPed->SetTickNextAction(GetTickCount());
 }

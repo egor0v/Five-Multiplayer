@@ -152,6 +152,7 @@ public:
 	int			GetMoveState();
 	void		SetTickNextSprint(DWORD tickCount) { nextSprintAnim = tickCount; }
 	DWORD		GetTickNextSprint() { return nextSprintAnim; }
+	void		ChooseSprintingAnim(Ped ped);
 };
 
 extern char* pedModels[690];

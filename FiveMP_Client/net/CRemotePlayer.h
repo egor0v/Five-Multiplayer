@@ -63,6 +63,7 @@ private:
 	Vector3				m_vecForward;
 	Vector3				m_vecAimPos;
 	bool				m_bShooting;
+	bool				m_bWasRunning;
 	UINT32				m_curWeaponHash;
 	Vector3				m_speed;
 	int					m_moveState;

@@ -160,6 +160,9 @@ void CPlayerPed::Create(int iSkin, float fX, float fY, float fZ, float fRotation
 
 	//Running anims
 	STREAMING::REQUEST_ANIM_DICT("move_p_m_zero");
+	STREAMING::REQUEST_ANIM_DICT("move_action@p_m_zero@armed@core");
+	STREAMING::REQUEST_ANIM_DICT("move_weapon@rifle@generic");
+	STREAMING::REQUEST_ANIM_DICT("move_weapon@pistol@generic");
 
 	DWORD dwPlayerHandle;
 	int iPlayerNumber = m_bytePlayerNumber;
@@ -191,6 +194,26 @@ Vector3 CPlayerPed::GetRotation() {
 	myVec.y = ENTITY::GET_ENTITY_PITCH((Entity)curPedPtr);
 	myVec.z = ENTITY::GET_ENTITY_ROTATION((Entity)curPedPtr, 0).z;
 	return myVec;
+}
+void CPlayerPed::ChooseSprintingAnim(Ped ped) {
+	UINT32 curWep = WEAPON::GET_SELECTED_PED_WEAPON(ped);
+	UINT32 wGroup = WEAPON::GET_WEAPONTYPE_GROUP(curWep);
+	if (WEAPON::IS_PED_ARMED(ped, 0xFF)) {
+		switch (wGroup) {
+		case WeaponTypeGroup::WEAPON_TYPE_GROUP_SMG: case WeaponTypeGroup::WEAPON_TYPE_GROUP_PISTOL:
+			AI::TASK_PLAY_ANIM(ped, "move_p_m_zero", "sprint", 8.0f, 0.0f, -1, 9, 0, 0, 0, 0);
+			break;
+		case WeaponTypeGroup::WEAPON_TYPE_GROUP_MELEE: case WeaponTypeGroup::WEAPON_TYPE_GROUP_THROWABLE:
+			AI::TASK_PLAY_ANIM(ped, "move_p_m_zero", "sprint", 8.0f, 0.0f, -1, 9, 0, 0, 0, 0);
+			break;
+		default:
+			//case WeaponTypeGroup::WEAPON_TYPE_GROUP_ASSAULTRIFLE || WeaponTypeGroup::WEAPON_TYPE_GROUP_SHOTGUN || WeaponTypeGroup::WEAPON_TYPE_GROUP_SNIPER || WeaponTypeGroup::WEAPON_TYPE_GROUP_MG:
+			AI::TASK_PLAY_ANIM(ped, "move_weapon@rifle@generic", "sprint", 8.0f, 0.0f, -1, 9, 0, 0, 0, 0);
+			break;
+		}
+	} else {
+		AI::TASK_PLAY_ANIM(ped, "move_p_m_zero", "sprint", 8.0f, 0.0f, -1, 9, 0, 0, 0, 0);
+	}
 }
 int CPlayerPed::GetPedSeat(Ped ped)
 {

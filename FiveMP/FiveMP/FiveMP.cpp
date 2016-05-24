@@ -89,7 +89,7 @@ int main(void) {
 				GameThread = false;
 			}
 		}
-		Sleep(1000);
+		Sleep(500);
 	}
 	Sleep(5000);
 	//FindNativeTableAddress();
