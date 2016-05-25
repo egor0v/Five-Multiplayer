@@ -121,12 +121,12 @@ public:
 
 	//VEHICLE_TYPE* GetGtaVehicle();
 
-	void		  RemoveFromVehicleAndPutAt(float fX, float fY, float fZ);
 	void		  TogglePlayerControllable(int iControllable);
 	BYTE		  FindDeathReasonAndResponsiblePlayer(EntityId * nPlayer);
 	void		  RestartIfWastedAt(Vector3 *vecRestart, float fRotation);
 	BYTE		  GetPassengerSeat();
 #endif
+	void		  RemoveFromVehicleAndPutAt(float fX, float fY, float fZ);
 	void		  GetPosition(Vector3 *position);
 	Vector3		  GetRotation();
 	int			GetPedSeat(Ped ped);

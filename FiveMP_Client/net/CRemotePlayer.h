@@ -134,6 +134,8 @@ public:
 	void InflictDamage(bool bPlayerVehicleDamager, EntityId damagerID, int iWeapon, float fUnk, int iPedPieces, BYTE byteUnk);
 	void RemotePlayerDecideShoot(Vector3 vPos, Vector3 Position, float dist, DWORD timeTakes);
 	float GetSpeedFloat() { return roundf(sqrtf(pow(fabs(m_speed.x), 2.0) + pow(fabs(m_speed.y), 2.0) + pow(fabs(m_speed.z), 2.0))); }
+	void	SetQuaternion(float quat[4]) { memcpy(matrix.quat, quat, sizeof(matrix.quat)); }
+	void	GetQuaternion(float * quat) { memcpy(quat, matrix.quat, sizeof(matrix.quat)); }
 };
 
 //----------------------------------------------------

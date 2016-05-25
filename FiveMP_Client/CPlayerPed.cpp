@@ -169,6 +169,12 @@ void CPlayerPed::Create(int iSkin, float fX, float fY, float fZ, float fRotation
 }
 //-----------------------------------------------------------
 
+void CPlayerPed::RemoveFromVehicleAndPutAt(float fX, float fY, float fZ) {
+	if (curPedPtr != NULL) {
+		Vehicle veh = PED::GET_VEHICLE_PED_IS_IN((Ped)curPedPtr, false);
+		AI::TASK_LEAVE_VEHICLE((Ped)curPedPtr, veh, 16);
+	}
+}
 void CPlayerPed::GetPosition(Vector3 *position) {
 	if (curPedPtr != NULL) {
 		memcpy(position, &ENTITY::GET_ENTITY_COORDS((DWORD)curPedPtr, true), sizeof(Vector3));

@@ -145,31 +145,26 @@ void CRemotePlayer::Process()
 void CRemotePlayer::HandleVehicleEntryExit()
 {
 	//TODO: Add GetHealth, IsInVehicle and whatever is in red..
-#if 0
 	CVehicleManager *pVehicleManager = pNetowkManager->GetVehicleManager();
-
-	if (m_vehicleID == 0 && m_pPlayerPed->IsInVehicle())
+	if (m_vehicleID == 0 && PED::IS_PED_IN_ANY_VEHICLE((Ped)m_pPlayerPed->curPedPtr, true))
 	{
-		m_pPlayerPed->RemoveFromVehicleAndPutAt(m_matWorld.vPos.X,
-			m_matWorld.vPos.Y, m_matWorld.vPos.Z);
+		Vector3 vecPos;
+		m_pPlayerPed->GetPosition(&vecPos);
+		m_pPlayerPed->RemoveFromVehicleAndPutAt(vecPos.x, vecPos.y, vecPos.z);
 	}
-	else if ((m_vehicleID != 0) && !m_pPlayerPed->IsInVehicle())
+	else if ((m_vehicleID != 0) && !PED::IS_PED_IN_ANY_VEHICLE((Ped)m_pPlayerPed->curPedPtr, true))
 	{
 		// must force in
 		CVehicle * pVehicle = pVehicleManager->GetAt(m_vehicleID);
-
 		if (pVehicle && pVehicle->GetHealth() > 0.0f) {
 			if (!m_bIsAPassenger) {
-				m_pPlayerPed->PutDirectlyInVehicle(pVehicleManager->FindGtaIDFromID(m_vehicleID));
+				AI::TASK_WARP_PED_INTO_VEHICLE((Ped)m_pPlayerPed->curPedPtr, (Vehicle)pVehicle->pVehiclePtr, -1);
 			}
 			else {
-				m_pPlayerPed->ForceIntoPassengerSeat(pVehicleManager->FindGtaIDFromID(m_vehicleID), m_bytePassengerSeat);
+				AI::TASK_WARP_PED_INTO_VEHICLE((Ped)m_pPlayerPed->curPedPtr, (Vehicle)pVehicle->pVehiclePtr, m_bytePassengerSeat);
 			}
 		}
 	}
-
-	}
-#endif
 }
 void CRemotePlayer::RemotePlayerDecideShoot(Vector3 vPos, Vector3 Position, float dist, DWORD timeTakes) {
 	//FiringPattern.FullAuto = 0xC6EE6B4C
@@ -331,9 +326,10 @@ void CRemotePlayer::UpdateInCarMatrixAndSpeed(MATRIX2X4 * matWorld, Vector3 * ve
 		}
 #endif
 		Vector3 vecPos = { matWorld->vPos.x, matWorld->vPos.z, matWorld->vPos.z };
-		pVehicle->SetPos(vecPos);
-		pVehicle->SetMoveSpeed(*vecMoveSpeed);
-		pVehicle->SetTurnSpeed(*vecTurnSpeed);
+		//pVehicle->SetPos(vecPos);
+		pVehicle->SetQuaternion(matrix.quat);
+		pVehicle->SetMoveSpeed((Vector3)*vecMoveSpeed);
+		pVehicle->SetTurnSpeed((Vector3)*vecTurnSpeed);
 		//pVehicle->SetMatrix(matVehicle);
 	}
 }
@@ -355,9 +351,9 @@ void CRemotePlayer::StoreInCarFullSyncData(VEHICLE_SYNC_DATA * pVehicleSyncData)
 		m_matWorld.vecRoll[x] = pVehicleSyncData->vecRoll[x];
 	}
 	*/
-	pGameVehicle->SetQuaternion(pVehicleSyncData->matrix.quat);
 	//memcpy(&m_matWorld.vLookUp, &pVehicleSyncData->vecDirection, sizeof(float));
 	//std::copy(pVehicleSyncData->vecPos, pVehicleSyncData->vecPos + 3, m_matWorld.vPos);
+	SetQuaternion(pVehicleSyncData->matrix.quat);
 	memcpy(&m_matWorld.vPos, &pVehicleSyncData->vecPos, sizeof(Vector3));
 	memcpy(&m_vecMoveSpeed, &pVehicleSyncData->vecMoveSpeed, sizeof(Vector3));
 	memcpy(&m_vecTurnSpeed, &pVehicleSyncData->vecTurnSpeed, sizeof(Vector3));
