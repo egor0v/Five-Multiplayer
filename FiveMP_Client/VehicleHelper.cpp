@@ -89,7 +89,7 @@ Vehicle ClonePedVehicle(Ped ped)
 			VEHICLE::SET_VEHICLE_WINDOW_TINT(playerVeh, VEHICLE::GET_VEHICLE_WINDOW_TINT(pedVeh));
 			VEHICLE::SET_VEHICLE_DIRT_LEVEL(playerVeh, VEHICLE::GET_VEHICLE_DIRT_LEVEL(pedVeh));
 			VEHICLE::SET_VEHICLE_ENGINE_ON(playerVeh, TRUE, TRUE, TRUE);
-			if (GRAPHICS::_HAS_VEHICLE_GOT_DECAL(pedVeh, 0) == TRUE)
+			if (GRAPHICS::_DOES_VEHICLE_HAVE_DECAL(pedVeh, 0) == TRUE)
 			{
 				AddClanLogoToVehicle(playerVeh, ped);
 			}
@@ -185,7 +185,7 @@ void DumpVehicleStats(Vehicle vehicle)
 		{
 			Log::Msg("VEHICLE::SET_VEHICLE_LIVERY(playerVeh, %i);", VEHICLE::GET_VEHICLE_LIVERY(vehicle));
 		}
-		if (GRAPHICS::_HAS_VEHICLE_GOT_DECAL(vehicle, 0) == TRUE)
+		if (GRAPHICS::_DOES_VEHICLE_HAVE_DECAL(vehicle, 0) == TRUE)
 		{
 			Log::Msg("AddClanLogoToVehicle(playerVeh, playerPed);");
 		}
