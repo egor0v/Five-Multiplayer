@@ -18,9 +18,14 @@ void HookFunctionBase::Register()
 
 void HookFunctionBase::RunAll()
 {
+	//int x = 0;
+	//char string[128];
+	//MessageBoxA(0, "arg", "arg", 0);
 	for (auto func = g_hookFunctions; func; func = func->m_next)
 	{
 		func->Run();
+		//sprintf(string, "%d", x);
+		//MessageBoxA(0, "last called func id", string, 0);
 	}
 }
 

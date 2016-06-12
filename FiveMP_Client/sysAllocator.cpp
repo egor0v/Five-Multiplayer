@@ -25,5 +25,7 @@ namespace rage
 
 static HookFunction hookFunction([]()
 {
+#if 0 //disable temporarily, todo: fix it, shows up twice on ida - 6-12-2016
 	rage::g_tlsOffset = *hook::pattern("B9 ? ? ? ? 48 8B 0C 01 45 33 C9 49 8B D2 48").get(0).get<uint32_t>(1);
+#endif
 });
