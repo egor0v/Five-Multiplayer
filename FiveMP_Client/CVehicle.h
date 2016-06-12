@@ -28,7 +28,7 @@ public:
 	void	SetQuaternion(float * quat);
 	void	GetQuaternion(float * quat);
 	void	SetHealth(float amount) { VEHICLE::SET_VEHICLE_BODY_HEALTH((Vehicle)pVehiclePtr, amount); }
-	float	GetHealth() { VEHICLE::GET_VEHICLE_BODY_HEALTH((Vehicle)pVehiclePtr); }
+	float	GetHealth() { return VEHICLE::GET_VEHICLE_BODY_HEALTH((Vehicle)pVehiclePtr); }
 	void	SetMoveSpeed(Vector3 speed) { ENTITY::SET_ENTITY_VELOCITY((Entity)pVehiclePtr, speed.x, speed.y, speed.z); }
 	void	SetTurnSpeed(Vector3 turnspeed) { ENTITY::APPLY_FORCE_TO_ENTITY((Entity)pVehiclePtr, 3, turnspeed.x, turnspeed.y, turnspeed.z, 0.0f, 0.0f, 0.0f, true, false, true, true, true, true); }
 	void	SetPos(Vector3 pos) { ENTITY::SET_ENTITY_COORDS((Entity)pVehiclePtr, pos.x, pos.y, pos.z, true, true, true, false); }

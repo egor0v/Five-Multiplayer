@@ -52,11 +52,11 @@ float draw_menu_line(std::string caption, float lineWidth, float lineHeight, flo
 	UI::SET_TEXT_DROPSHADOW(2, 0, 0, 0, 255);
 	UI::SET_TEXT_EDGE(0, 0, 0, 0, 0);
 	UI::_SET_TEXT_ENTRY("STRING");
-	UI::_ADD_TEXT_COMPONENT_STRING((LPSTR)caption.c_str());
+	UI::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME((LPSTR)caption.c_str());
 	UI::_DRAW_TEXT(textLeftScaled, (((lineTopScaled + 0.00278f) + lineHeightScaled) - 0.005f));
 
 	int num25 = UI::_0x9040DFB09BE75706(textLeftScaled, (((lineTopScaled + 0.00278f) + lineHeightScaled) - 0.005f));
-	float num26 = UI::_0xDB88A37483346780(text_scale, 0);
+	float num26 = UI::_GET_TEXT_SCALE_HEIGHT(text_scale, 0);
 
 	if (bDrawRect)
 		draw_rect(lineLeftScaled, lineTopScaled + (0.007f), lineWidthScaled, ((((float)(num25)*num26) + (lineHeightScaled * 2.0f)) + 0.005f), rect_col[0], rect_col[1], rect_col[2], rect_col[3]);
@@ -73,7 +73,7 @@ void draw_text(float x, float y, char* chSampleText, color_t color)
 	UI::SET_TEXT_DROPSHADOW(0, 0, 0, 0, 0);
 	UI::SET_TEXT_EDGE(0, 0, 0, 0, 0);
 	UI::_SET_TEXT_ENTRY("STRING");
-	UI::_ADD_TEXT_COMPONENT_STRING(chSampleText);
+	UI::ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(chSampleText);
 	UI::_DRAW_TEXT(x, y);
 }
 
